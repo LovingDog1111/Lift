@@ -179,7 +179,7 @@ void ClickGUI::onD2DRender() {
     float textHeight = D2D::getTextHeight("X", textSize * 1.65f);
     float sliderExtraHeight = 5.f;
 
-    float headerTextSize = 0.75f;
+    float headerTextSize = 0.7f;
     float headerTextHeight = D2D::getTextHeight("X", textSize * 1.75f);
     float animSpeed = 20.f;
 

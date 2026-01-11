@@ -8,6 +8,10 @@ private:
 
 	static __int64 ClientInstance_UpdateCallback(ClientInstance* _this, bool a2) {
 		Game::clientInstance = _this;
+		//backup
+		if (!FeatureFactory::getFeature<ClickGUI>()->initialized) {
+			FeatureFactory::getFeature<ClickGUI>()->InitClickGUI();
+		}
 		return oFunc(_this, a2);
 	}
 public:
