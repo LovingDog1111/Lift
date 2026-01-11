@@ -30,22 +30,22 @@ namespace Memory {
 			std::cout << "[vfunc] Call failed at vtable '" << vtableName
 				<< "', index " << index << std::endl;
 			if constexpr (!std::is_void_v<Ret>) {
-				return Ret(); // default value for non-void
+				return Ret(); 
 			}
 			else {
-				return; // for void, just return
+				return; 
 			}
 		}
 
 		if constexpr (std::is_void_v<Ret>) {
 			reinterpret_cast<Fn>(vtable[index])(_this, args...);
-			std::cout << "[vfunc] Call succeeded at vtable '" << vtableName
-				<< "', index " << index << std::endl;
+			//std::cout << "[vfunc] Call succeeded at vtable '" << vtableName
+				//<< "', index " << index << std::endl;
 		}
 		else {
 			Ret result = reinterpret_cast<Fn>(vtable[index])(_this, args...);
-			std::cout << "[vfunc] Call succeeded at vtable '" << vtableName
-				<< "', index " << index << std::endl;
+			//std::cout << "[vfunc] Call succeeded at vtable '" << vtableName
+				//<< "', index " << index << std::endl;
 			return result;
 		}
 	}

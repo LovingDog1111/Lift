@@ -7,6 +7,7 @@ void FeatureFactory::init() {
 	moduleList.push_back(new NoCrosshair());
 	moduleList.push_back(new NoHurtCam());
 	moduleList.push_back(new NoEatBob());
+	moduleList.push_back(new CustomSky());
 	moduleList.push_back(new Theme());
 	moduleList.push_back(new KillAura());
 	moduleList.push_back(new Fly());

@@ -12,13 +12,14 @@
 #include "Hooks/HurtCamHook.h"
 #include "Hooks/HudCursorRendererHook.h"
 #include "../Lift/Features/FeatureFactory.h"
+#include "Hooks/BrightnessFogColorHook.h"
 #include "../Values/Sigs.h"
 
 void HooksFactory::init() {
 	MH_Initialize();
 
 	AddHook<ClientInstanceUpdateHook>(Memory::FindSignature(Sigs::ClientInstanceUpdate, "ClientInstanceUpdate"));
-
+	AddHook<BrightnessFogColorHook>(Memory::FindSignature("41 0f 10 08 48 8b c2 0f 28 d3"));
 	AddHook<SendChatMessageHook>(Memory::getFuncFromCall(Memory::FindSignature(Sigs::ClientInstanceScreenModelSendChatMessage, "ClientInstanceScreenModelSendChatMessage")));
 	AddHook<KeyMapHook>(Sigs::KeyPressFunc, "KeyPressFunc");
 	AddHook<KeyMouseHook>(Sigs::KeyMouseFunc, "KeyMouseFunc");

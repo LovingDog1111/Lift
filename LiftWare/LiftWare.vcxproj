@@ -107,6 +107,7 @@
       </ForcedIncludeFiles>
     </ClCompile>
     <ClCompile Include="Libs\kiero\kiero.cpp" />
+    <ClCompile Include="Lift\Features\Categories\Visual\CustomSky.cpp" />
     <ClCompile Include="Lift\Features\Categories\Visual\NoCrosshair.cpp" />
     <ClCompile Include="Lift\Features\Categories\Visual\NoEatBob.cpp" />
     <ClCompile Include="Lift\Features\Categories\Visual\NoHurtCam.cpp" />
@@ -146,6 +147,7 @@
     <ClInclude Include="HookFactory\HooksFactory.h" />
     <ClInclude Include="HookFactory\Hooks\ActorNormalTickHook.h" />
     <ClInclude Include="HookFactory\Hooks\ActorSetRotHook.h" />
+    <ClInclude Include="HookFactory\Hooks\BrightnessFogColorHook.h" />
     <ClInclude Include="HookFactory\Hooks\ClientInstanceUpdateHook.h" />
     <ClInclude Include="HookFactory\Hooks\GammaHook.h" />
     <ClInclude Include="HookFactory\Hooks\HudCursorRendererHook.h" />
@@ -550,6 +552,7 @@
     <ClInclude Include="Libs\libhat\libhat\Traits.hpp" />
     <ClInclude Include="Libs\minhook\MinHook.h" />
     <ClInclude Include="Libs\xorstr.hpp" />
+    <ClInclude Include="Lift\Features\Categories\Visual\CustomSky.h" />
     <ClInclude Include="Lift\Features\Categories\Visual\NoCrosshair.h" />
     <ClInclude Include="Lift\Features\Categories\Visual\NoEatBob.h" />
     <ClInclude Include="Lift\Features\Categories\Visual\NoHurtCam.h" />
