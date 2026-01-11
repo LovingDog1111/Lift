@@ -12,6 +12,9 @@ public:
 	inline static constexpr std::string_view GameMode_GetDestroyRate = "48 89 5C 24 ? 57 48 83 EC 30 48 8B F9 0F 29 74 24 ? 48 8B 49 08 E8";
 	inline static constexpr std::string_view PlayerVtable = "48 8D 05 ? ? ? ? 48 89 01 B8 ? ? ? ? 8D 50 FA 44 8D 48 ? 44 8D 40 ? 66 89 44 ? ? E8 ? ? ? ? 48 8B 8B";
 	inline static constexpr std::string_view KeyPressFunc = "48 ? ? 48 ? ? ? 4C 8D 05 ? ? ? ? 89";
+	inline static constexpr std::string_view ActorSetRot = "4C 8B DC 49 89 73 10 49 89 7B 20 55 49 8D 6B A1 48 81 EC ? ? ? ? 48 8B";
+
+	inline static const std::string version = "1.21.2";
 };
 
 /* GameMode_baseUseItem

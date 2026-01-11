@@ -6,4 +6,8 @@ public:
 	void displayClientMessage(const std::string& message) {
 		Memory::CallVFunc<VTables::LocalPlayerDisplayClientMessage, void, const std::string&>(this, message);
 	}
+
+	void resetRot() {
+		Memory::CallVFunc<VTables::resetRot, void>(this);
+	}
 };

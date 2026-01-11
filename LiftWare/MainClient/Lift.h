@@ -13,5 +13,6 @@ public:
     static void init();
     static void checkSigs();
     static void shutdown();
+    static void checkOffsets();
     static void displayMessage(const char* fmt, ...);
 };

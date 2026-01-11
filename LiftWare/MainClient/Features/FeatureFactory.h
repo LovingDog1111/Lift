@@ -22,6 +22,8 @@ public:
 
 	static void onKeyUpdate(int key, bool isDown);
 	static void onNormalTick(LocalPlayer* localPlayer);
+	static void onUpdateRotation(LocalPlayer* localPlayer);
 	static void onLoadConfig(void* conf);
 	static void onSaveConfig(void* conf);
+	static void onD2DRender();
 };

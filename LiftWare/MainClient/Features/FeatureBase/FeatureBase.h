@@ -8,6 +8,8 @@
 #include "Settings/BoolSetting.h"
 #include "Settings/KeybindSetting.h"
 
+#include "../../Renderer/D2D.h"
+
 enum class Category {
 	COMBAT = 0,
 	EXPLOIT = 1,
@@ -63,8 +65,10 @@ public:
 	virtual void toggle();
 	virtual void onDisable();
 	virtual void onEnable();
+	virtual void onD2DRender();
 	virtual void onKeyUpdate(int key, bool isDown);
 	virtual void onNormalTick(LocalPlayer* localPlayer);
+	virtual void onUpdateRotation(LocalPlayer* localPlayer);
 	virtual void onLoadConfig(void* conf);
 	virtual void onSaveConfig(void* conf);
 };

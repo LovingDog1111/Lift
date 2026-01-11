@@ -42,6 +42,28 @@ void FeatureFactory::onNormalTick(LocalPlayer* localPlayer) {
 	}
 }
 
+void FeatureFactory::onD2DRender() {
+	if (!Lift::isInitialized())
+		return;
+
+	for (auto& mod : moduleList) {
+		if (mod->isEnabled() || mod->runOnBackground()) {
+			mod->onD2DRender();
+		}
+	}
+}
+
+void FeatureFactory::onUpdateRotation(LocalPlayer* localPlayer) {
+	if (!Lift::isInitialized())
+		return;
+
+	for (auto& mod : moduleList) {
+		if (mod->isEnabled() || mod->runOnBackground()) {
+			mod->onUpdateRotation(localPlayer);
+		}
+	}
+}
+
 void FeatureFactory::onLoadConfig(void* conf) {
 	if (!Lift::isInitialized())
 		return;

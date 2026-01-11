@@ -87,6 +87,12 @@ void Feature::onEnable() {
 void Feature::onNormalTick(LocalPlayer* localPlayer) {
 }
 
+void Feature::onD2DRender() {
+}
+
+void Feature::onUpdateRotation(LocalPlayer* localPlayer) {
+}
+
 void Feature::onLoadConfig(void* confVoid) {
 	json* conf = reinterpret_cast<json*>(confVoid);
 	std::string modName = this->getModuleName();

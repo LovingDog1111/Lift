@@ -21,4 +21,6 @@ public:
     inline static constexpr uintptr_t DestroyProgress = 0x24;
     inline static constexpr uintptr_t MCTFBaseChar0 = 0xC2;
     inline static constexpr uintptr_t MCTFBaseChar1 = 0xA7;
+
+    inline static const std::string version = "1.21.2";
 };

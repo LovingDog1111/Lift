@@ -120,8 +120,11 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="Memory\Memory.cpp" />
+    <ClCompile Include="Renderer\Colors.cpp" />
+    <ClCompile Include="Renderer\D2D.cpp" />
     <ClCompile Include="SDK\Game.cpp" />
     <ClCompile Include="SDK\MCTextFormat.cpp" />
+    <ClCompile Include="Time\Time.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Library Include="Libs\curl\libcurl_a.lib" />
@@ -134,9 +137,12 @@
     <ClInclude Include="HookFactory\FuncHook\FuncHook.h" />
     <ClInclude Include="HookFactory\HooksFactory.h" />
     <ClInclude Include="HookFactory\Hooks\ActorNormalTickHook.h" />
+    <ClInclude Include="HookFactory\Hooks\ActorSetRotHook.h" />
     <ClInclude Include="HookFactory\Hooks\ClientInstanceUpdateHook.h" />
     <ClInclude Include="HookFactory\Hooks\GammaHook.h" />
     <ClInclude Include="HookFactory\Hooks\KeyMapHook.h" />
+    <ClInclude Include="HookFactory\Hooks\PresentHook.h" />
+    <ClInclude Include="HookFactory\Hooks\ResizeBuffersHook.h" />
     <ClInclude Include="HookFactory\Hooks\SendChatMessageHook.h" />
     <ClInclude Include="Libs\curl\curl.h" />
     <ClInclude Include="Libs\curl\curlver.h" />
@@ -551,9 +557,12 @@
     <ClInclude Include="Math\Vector4.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="Memory\Memory.h" />
+    <ClInclude Include="Renderer\Colors.h" />
+    <ClInclude Include="Renderer\D2D.h" />
     <ClInclude Include="SDK\Core\ClientHMDState.h" />
     <ClInclude Include="SDK\Core\ClientInstance.h" />
     <ClInclude Include="SDK\Core\GuiData.h" />
+    <ClInclude Include="SDK\Core\mce.h" />
     <ClInclude Include="SDK\Core\Minecraft.h" />
     <ClInclude Include="SDK\Core\MinecraftGame.h" />
     <ClInclude Include="SDK\Game.h" />
@@ -568,8 +577,12 @@
     <ClInclude Include="SDK\World\Actors\Mob.h" />
     <ClInclude Include="SDK\World\Actors\Player.h" />
     <ClInclude Include="SDK\World\GameMode\GameMode.h" />
+    <ClInclude Include="Time\Time.h" />
+    <ClInclude Include="Values\AutoVTable\AutoVTableUpdater.h" />
+    <ClInclude Include="Values\meow.h" />
     <ClInclude Include="Values\Offsets.h" />
     <ClInclude Include="Values\Sigs.h" />
+    <ClInclude Include="Values\VersionChecker.h" />
     <ClInclude Include="Values\Vtables.h" />
   </ItemGroup>
   <ItemGroup>
