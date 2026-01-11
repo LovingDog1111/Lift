@@ -6,6 +6,7 @@
 #include "../../../Math/IncludeAll.h"
 #include "../../../Memory/Memory.h"
 #include "../../../Values/Sigs.h"
+#include "../../Values/Vtables.h"
 
 class Actor {
 public:
@@ -37,13 +38,13 @@ public:
     }
 
     void swing() {
-        Memory::CallVFunc<117, void>(this);
+        Memory::CallVFunc<VTables::ActorSwing, void>(this);
     }
 
     EntityContext* getEntityContext()
     {
         uintptr_t address = reinterpret_cast<uintptr_t>(this);
-        return reinterpret_cast<EntityContext*>((uintptr_t)this + 0x8);
+        return reinterpret_cast<EntityContext*>((uintptr_t)this + Offsets::Player);
     }
 public:
     virtual bool getStatusFlag(ActorFlags flag);

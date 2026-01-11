@@ -11,6 +11,7 @@
 #include "../World/Actors/Mob.h"
 #include "../World/Actors/Player.h"
 #include "../World/Actors/LocalPlayer.h"
+#include "../../Values/Vtables.h"
 
 struct GLMatrix {
 public:
@@ -73,18 +74,18 @@ public:
 
 class ClientInstance {
 public:
-	BUILD_ACCESS(MinecraftGame*, mcGame, 0xC8);
-	BUILD_ACCESS(Minecraft*, minecraft, 0xD0);
-	BUILD_ACCESS(GuiData*, guiData, 0x558);
+	BUILD_ACCESS(MinecraftGame*, mcGame, Offsets::mcGame);
+	BUILD_ACCESS(Minecraft*, minecraft, Offsets::minecraft);
+	BUILD_ACCESS(GuiData*, guiData, Offsets::guiData);
 public:
 	ClientHMDState* getHMDState() {
 
-		return reinterpret_cast<ClientHMDState*>((uintptr_t)this + 0x5A8);
+		return reinterpret_cast<ClientHMDState*>((uintptr_t)this + Offsets::HMDState);
 	}
 
 	LocalPlayer* getLocalPlayer() {
 
-		return Memory::CallVFunc<29, LocalPlayer*>(this);
+		return Memory::CallVFunc<VTables::ClientInstanceLocalPlayerOffset, LocalPlayer*>(this);
 	}
 
 	void playUI(std::string str, float a1, float a2)
@@ -92,32 +93,32 @@ public:
 		if (this == nullptr)
 			return;
 
-		Memory::CallVFunc<338, void>(this, str, a1, a2);
+		Memory::CallVFunc<VTables::ClientInstancePlayUI, void>(this, str, a1, a2);
 	}
 
 	GLMatrix* getbadrefdef() {
-		return (GLMatrix*)((uintptr_t)(this) + 0x330);
+		return (GLMatrix*)((uintptr_t)(this) + Offsets::BadRefDef);
 	}
 
 	Vector2<float> getFov() {
 		Vector2<float> fov;
-		fov.x = *(float*)(reinterpret_cast<uintptr_t>(this) + 0x6F0);
-		fov.y = *(float*)(reinterpret_cast<uintptr_t>(this) + 0x704);
+		fov.x = *(float*)(reinterpret_cast<uintptr_t>(this) + Offsets::FovX);
+		fov.y = *(float*)(reinterpret_cast<uintptr_t>(this) + Offsets::FovY);
 		return fov;
 	}
 
 	void grabMouse() {
 
-		Memory::CallVFunc<332, void>(this);
+		Memory::CallVFunc<VTables::ClientInstanceGrabMouse, void>(this);
 	}
 
 	void releaseMouse() {
 
-		Memory::CallVFunc<333, void>(this);
+		Memory::CallVFunc<VTables::ClientInstanceReleaseMouse, void>(this);
 	}
 
 	void focusMouse() {
 
-		Memory::CallVFunc<334, void>(this);
+		Memory::CallVFunc<VTables::ClientInstanceFocusMouse, void>(this);
 	}
 };

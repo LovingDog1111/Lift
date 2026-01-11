@@ -12,11 +12,11 @@ class Block;
 
 class GameMode {
 public:
-    BUILD_ACCESS(Player*, player, 0x8);
-    BUILD_ACCESS(BlockPos, lastBreakPos, 0x10);
-    BUILD_ACCESS(int32_t, lastBreakFace, 0x1C);
-    BUILD_ACCESS(float, lastDestroyProgress, 0x20);
-    BUILD_ACCESS(float, destroyProgress, 0x24);
+    BUILD_ACCESS(Player*, player, Offsets::Player);
+    BUILD_ACCESS(BlockPos, lastBreakPos, Offsets::LastBreakPos);
+    BUILD_ACCESS(int32_t, lastBreakFace, Offsets::LastBreakFace);
+    BUILD_ACCESS(float, lastDestroyProgress, Offsets::LastDestroyProgress);
+    BUILD_ACCESS(float, destroyProgress, Offsets::DestroyProgress);
 private:
     virtual void Destructor();
 public:

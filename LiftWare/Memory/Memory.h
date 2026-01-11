@@ -3,6 +3,7 @@
 #include <Psapi.h>
 #include <string_view>
 #include <cstdint>
+#include "../Values/Offsets.h"
 
 #define BUILD_ACCESS(type, name, offset)																			\
 __declspec(property(get = get##name, put = set##name)) type name;													\

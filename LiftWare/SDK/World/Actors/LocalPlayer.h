@@ -4,6 +4,6 @@
 class LocalPlayer : public Player {
 public:
 	void displayClientMessage(const std::string& message) {
-		Memory::CallVFunc<213, void, const std::string&>(this, message);
+		Memory::CallVFunc<VTables::LocalPlayerDisplayClientMessage, void, const std::string&>(this, message);
 	}
 };

@@ -4,6 +4,6 @@
 
 class ClientHMDState {
 public:
-	BUILD_ACCESS(glm::mat4, mLastLevelViewMatrix, 0xC8);
-	BUILD_ACCESS(glm::mat4, mLastLevelProjMatrix, 0x148); //:D
+	BUILD_ACCESS(glm::mat4, mLastLevelViewMatrix, Offsets::LastLevelViewMatrix);
+	BUILD_ACCESS(glm::mat4, mLastLevelProjMatrix, Offsets::LastLevelProjMatrix); //:D
 };
