@@ -28,8 +28,8 @@ public:
 
 
 	template<typename Hook>
-	static void RequestHook(std::string_view sig) {
-		RequestHook<Hook>(Memory::FindSignature(sig));
+	static void RequestHook(std::string_view sig, std::string signame) {
+		RequestHook<Hook>(Memory::FindSignature(sig, signame));
 	}
 
 	template<typename Hook>

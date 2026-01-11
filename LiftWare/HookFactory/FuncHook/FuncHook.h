@@ -3,7 +3,7 @@
 #include <memory>
 #include "../../Logs/Logger.h"
 #include "../../SDK/Game.h"
-#include "../../MainClient/Features/FeatureFactory.h"
+#include "../../Lift/Features/FeatureFactory.h"
 
 class FuncHook {
 public:

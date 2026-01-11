@@ -1,7 +1,7 @@
 #pragma once
 #include "../FuncHook/FuncHook.h"
 #include "../../Renderer/D2D.h"
-#include "../../MainClient/Lift.h"
+#include "../../Lift/Lift.h"
 #include <Windows.h>
 
 class PresentHook : public FuncHook {

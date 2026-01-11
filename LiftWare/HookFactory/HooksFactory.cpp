@@ -9,18 +9,18 @@
 #include "Hooks/ActorSetRotHook.h"
 #include "Hooks/ResizeBuffersHook.h"
 #include "Hooks/PresentHook.h"
-#include "../MainClient/Features/FeatureFactory.h"
+#include "../Lift/Features/FeatureFactory.h"
 #include "../Values/Sigs.h"
 
 void HooksFactory::init() {
 	MH_Initialize();
 
-	RequestHook<ClientInstanceUpdateHook>(Sigs::ClientInstanceUpdate);
-	RequestHook<GammaHook>(Sigs::OptionsGetGamma);
+	RequestHook<ClientInstanceUpdateHook>(Sigs::ClientInstanceUpdate, "ClientInstanceUpdate");
+	RequestHook<GammaHook>(Sigs::OptionsGetGamma, "Options_GetGamma");
 	RequestHook<SendChatMessageHook>(Memory::getFuncFromCall(Memory::FindSignature(Sigs::ClientInstanceScreenModelSendChatMessage, "ClientInstanceScreenModelSendChatMessage")));
-	RequestHook<KeyMapHook>(Sigs::KeyPressFunc);
-	RequestHook<KeyMouseHook>(Sigs::KeyMouseFunc);
-	RequestHook<ActorSetRotHook>(Sigs::ActorSetRot);
+	RequestHook<KeyMapHook>(Sigs::KeyPressFunc, "KeyPressFunc");
+	RequestHook<KeyMouseHook>(Sigs::KeyMouseFunc, "KeyMouseFunc");
+	RequestHook<ActorSetRotHook>(Sigs::ActorSetRot, "ActorSetRot");
 
 	{
 		uintptr_t** PlayerVTable = (uintptr_t**)Memory::GetVTableFromSignature(Sigs::PlayerVtable);

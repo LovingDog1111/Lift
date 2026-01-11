@@ -1,9 +1,9 @@
 #include <Windows.h>
 #include "Logs/logger.h"
-#include "MainClient/Lift.h"
+#include "Lift/Lift.h"
 #include "HookFactory/HooksFactory.h"
-#include "MainClient/Features/FeatureFactory.h"
-#include "MainClient/Commands/CommandFactory.h"
+#include "Lift/Features/FeatureFactory.h"
+#include "Lift/Commands/CommandFactory.h"
 #include <thread>
 #include "Values/VersionChecker.h"
 

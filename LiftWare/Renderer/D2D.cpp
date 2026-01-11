@@ -1,8 +1,8 @@
 #include "D2D.h"
 #include <unordered_map>
 #include <winrt/base.h>
-#include "../MainClient/Lift.h"
-#include "../MainClient/Features/FeatureFactory.h"
+#include "../Lift/Lift.h"
+#include "../Lift/Features/FeatureFactory.h"
 #include "../SDK/Game.h"
 #include "../Time/Time.h"
 #include "../Logs/Logger.h"

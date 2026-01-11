@@ -1,8 +1,8 @@
 #pragma once
 #include "../FuncHook/FuncHook.h"
-#include "../../MainClient/Lift.h"
-#include "../../MainClient/Features/FeatureFactory.h"
-#include "../../MainClient/Commands/CommandFactory.h"
+#include "../../Lift/Lift.h"
+#include "../../Lift/Features/FeatureFactory.h"
+#include "../../Lift/Commands/CommandFactory.h"
 
 class KeyMapHook : public FuncHook {
 private:

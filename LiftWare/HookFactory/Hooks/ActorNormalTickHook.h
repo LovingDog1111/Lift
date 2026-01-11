@@ -1,6 +1,6 @@
 #pragma once
 #include "../FuncHook/FuncHook.h"
-#include "../../MainClient/Lift.h"
+#include "../../Lift/Lift.h"
 
 class ActorNormalTickHook : public FuncHook {
 private:

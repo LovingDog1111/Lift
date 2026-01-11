@@ -4,6 +4,7 @@
 class BoolSetting : public Setting {
 public:
 	bool* value;
+	float boolAnimProgress = 0.f;
 
 	BoolSetting(std::string settingName, std::string des, bool* ptr, bool defaultValue) {
 		this->name = settingName;

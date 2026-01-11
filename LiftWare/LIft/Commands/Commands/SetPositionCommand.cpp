@@ -1,6 +1,6 @@
 #include "SetPositionCommand.h"
-#include "../../MainClient/Lift.h"
-#include "../../MainClient/Features/FeatureFactory.h"
+#include "../../Lift/Lift.h"
+#include "../../Lift/Features/FeatureFactory.h"
 #include <sstream>
 #include <algorithm>
 

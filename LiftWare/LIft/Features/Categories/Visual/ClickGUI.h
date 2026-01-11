@@ -9,6 +9,7 @@ private:
         Category category;
         Vector2<float> pos;
         bool extended = true;
+        float animProgress = 0.f;
         std::vector<Feature*> moduleList;
 
         Header(std::string windowName, Vector2<float> startPos, Category c);

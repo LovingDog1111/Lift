@@ -32,13 +32,16 @@ private:
 	std::vector<Setting*> settings;
 public:
 	bool extended = false;
+	float animProgress = 0.0f;
+	float enableAnimProgress = 0.f;
+	float disableAnimProgress = 0.f;
 protected:
 	inline Setting* registerSetting(Setting* setting) {
 		this->settings.push_back(setting);
 		return setting;
 	}
 public:
-	Feature(std::string moduleName, std::string des, Category c, int k = 0x0);
+	Feature(std::string featureName, std::string des, Category c, int k = 0x0);
 	~Feature();
 
 	inline std::string getModuleName() {

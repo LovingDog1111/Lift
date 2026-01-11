@@ -1,8 +1,8 @@
 #pragma once
 #include <string>
 #include <vector>
-#include "../../MainClient/Lift.h"
-#include "../../MainClient/Features/FeatureFactory.h"
+#include "../../Lift/Lift.h"
+#include "../../Lift/Features/FeatureFactory.h"
 
 class CommandBase {
 public:

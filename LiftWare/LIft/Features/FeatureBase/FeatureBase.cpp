@@ -2,8 +2,8 @@
 
 using json = nlohmann::json;
 
-Feature::Feature(std::string moduleName, std::string des, Category c, int k) {
-	this->name = moduleName;
+Feature::Feature(std::string featureName, std::string des, Category c, int k) {
+	this->name = featureName;
 	this->description = des;
 	this->category = c;
 	this->keybind = k;
