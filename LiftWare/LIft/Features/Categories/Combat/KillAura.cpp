@@ -3,6 +3,7 @@
 KillAura::KillAura() : Feature("Killaura", "Automatically attacks nearby players.", Category::COMBAT) {
     std::vector<std::string> rots = { "Fast", "Slow" };
     registerSetting(new EnumSetting("Rotations", "Select your rotation mode", rots, &rotations, 0));
+    registerSetting(new SliderSetting<float>("Reach", "How far to reach.", &reach, reach, 0.f, 20.f));
 }
 
 std::vector<Actor*> KillAura::getTargets(Actor* localPlayer, float range) {
@@ -24,7 +25,7 @@ std::vector<Actor*> KillAura::getTargets(Actor* localPlayer, float range) {
 void KillAura::onUpdateRotation(LocalPlayer* localPlayer) {
     if (!localPlayer) return;
 
-    auto targets = getTargets(localPlayer, 6.2f);
+    auto targets = getTargets(localPlayer, reach + 0.5f);
     if (targets.empty()) return;
     Actor* closest = *std::min_element(targets.begin(), targets.end(), [&](Actor* a, Actor* b) {
         Vector3<float> da = a->getPosition() - localPlayer->getPosition();
@@ -51,7 +52,7 @@ void KillAura::onUpdateRotation(LocalPlayer* localPlayer) {
 void KillAura::onNormalTick(LocalPlayer* localPlayer) {
     if (!localPlayer) return;
 
-    auto targets = getTargets(localPlayer, 6.f);
+    auto targets = getTargets(localPlayer, reach);
     for (Actor* target : targets) {
         if (target) {
             localPlayer->swing();
