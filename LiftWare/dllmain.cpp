@@ -5,12 +5,12 @@
 #include "Lift/Features/FeatureFactory.h"
 #include "Lift/Commands/CommandFactory.h"
 #include <thread>
-#include "Values/VersionChecker.h"
+#include "Values/Client.h"
 
 DWORD WINAPI initClient(LPVOID lpParam) {
     HMODULE hModule = (HMODULE)lpParam;
 
-    ClientVersion version;
+    Client version;
     if (!version.isUpToDate()) {
         MessageBoxA(
             nullptr,
@@ -27,12 +27,14 @@ DWORD WINAPI initClient(LPVOID lpParam) {
     CoInitializeEx(nullptr, COINIT_MULTITHREADED);
     Lift::init();
     Lift::checkSigs();
+    Lift::checkPads();
     Lift::checkOffsets();
     FeatureFactory::init();
     CommandFactory::init();
     HooksFactory::init();
-    FeatureFactory::getFeature<ClickGUI>()->InitClickGUI(); //initialize AFTER THE DAmN CLIENT INSTANCE
-
+    if (Game::clientInstance) {
+        FeatureFactory::getFeature<ClickGUI>()->InitClickGUI(); //initialize after client instance!
+    }
     while (true) {
         Sleep(25);
     }

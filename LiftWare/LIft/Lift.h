@@ -12,6 +12,7 @@ public:
     static inline bool isInitialized() { return initialized; }
     static void init();
     static void checkSigs();
+    static void checkPads();
     static void shutdown();
     static void checkOffsets();
     static void displayMessage(const char* fmt, ...);

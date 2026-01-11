@@ -1,5 +1,29 @@
 #include "Lift.h"
 #include "../HookFactory/HooksFactory.h"
+#include "../Values/Client.h"
+
+void Lift::checkPads() { //we.. cant really check this, so this will have to do. its more so for looks.
+    auto checkPad = [](uintptr_t padValue, const std::string& name) {
+        if (padValue == 0) {
+            Logger::ErrorLog("Pad not valid: " + name);
+        }
+        else {
+            Logger::GoodLog("Pad valid: " + name + " -> 0x" + std::to_string(padValue));
+        }
+        };
+
+    checkPad(Pads::Minecraft_pad_0x0, "Minecraft_pad_0x0");
+    checkPad(Pads::GuiData_pad_0x0, "GuiData_pad_0x0");
+
+    const std::string expectedVersion = Pads::version;
+    const std::string clientVersion = Client::TargetVersion;
+    if (clientVersion != expectedVersion) {
+        Logger::ErrorLog("Client version mismatch! Expected: " + expectedVersion + ", Found: " + clientVersion);
+    }
+    else {
+        Logger::GoodLog("Client version valid: " + clientVersion);
+    }
+}
 
 void Lift::checkSigs() { //make sure everything is working and up to date!
     { 

@@ -5,9 +5,9 @@
 #include "VTables.h"
 #include <iostream>
 
-class ClientVersion {
+class Client {
 public:
-    std::string TargetVersion = "1.21.2";
+    inline static const std::string TargetVersion = "1.21.2";
 
     bool isUpToDate() {
         if (TargetVersion == Offsets::version &&
