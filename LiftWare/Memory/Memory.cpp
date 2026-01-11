@@ -36,10 +36,11 @@ uintptr_t Memory::FindSignature(std::string_view sig, std::string_view name) {
 }
 
 uintptr_t** Memory::GetVTableFromSignature(std::string_view sig) {
-    uintptr_t a = FindSignature(sig);
-    if (!a)
+    uintptr_t address = FindSignature(sig);
+
+    if (address == 0x0)
         return nullptr;
 
-    int o = *reinterpret_cast<int*>(a + 3);
-    return reinterpret_cast<uintptr_t**>(a + o + 7);
+    int finalOffset = *reinterpret_cast<int*>((address + 3));
+    return reinterpret_cast<uintptr_t**>(address + finalOffset + 7);
 }

@@ -28,3 +28,5 @@ template<typename T>
 Vector3<T> Mul(const Vector3<T>& a, T scalar) { return a * scalar; }
 template<typename T>
 Vector3<T> Div(const Vector3<T>& a, T scalar) { return a / scalar; }
+
+typedef Vector3<int> BlockPos;

@@ -46,7 +46,7 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <IncludePath>Libs\glm;Libs\kiero;Libs\minhook;Libs\libhat;$(IncludePath)</IncludePath>
-    <TargetName>catboy-stable</TargetName>
+    <TargetName>lift</TargetName>
   </PropertyGroup>
   <PropertyGroup Label="Vcpkg">
     <VcpkgEnabled>false</VcpkgEnabled>
@@ -97,6 +97,8 @@
   <ItemGroup>
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="Files\Creation\FileFactory.cpp" />
+    <ClCompile Include="HookFactory\FuncHook\FunkHook.cpp" />
+    <ClCompile Include="HookFactory\HooksFactory.cpp" />
     <ClCompile Include="Libs\glm\glm\detail\glm.cpp" />
     <ClCompile Include="Libs\glm\glm\glm.cppm">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
@@ -105,11 +107,20 @@
     </ClCompile>
     <ClCompile Include="Libs\kiero\kiero.cpp" />
     <ClCompile Include="Logs\Logger.cpp" />
+    <ClCompile Include="MainClient\Commands\CommandFactory.cpp" />
+    <ClCompile Include="MainClient\Commands\Commands\BindCommand.cpp" />
+    <ClCompile Include="MainClient\Commands\Commands\CommandBase.cpp" />
+    <ClCompile Include="MainClient\Commands\Commands\SetPositionCommand.cpp" />
+    <ClCompile Include="MainClient\Features\Categories\Other\Test.cpp" />
+    <ClCompile Include="MainClient\Features\FeatureBase\FeatureBase.cpp" />
+    <ClCompile Include="MainClient\Features\FeatureFactory.cpp" />
     <ClCompile Include="MainClient\Lift.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="Memory\Memory.cpp" />
+    <ClCompile Include="SDK\Game.cpp" />
+    <ClCompile Include="SDK\MCTextFormat.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Library Include="Libs\curl\libcurl_a.lib" />
@@ -119,6 +130,13 @@
   <ItemGroup>
     <ClInclude Include="Client\Managers\ModuleManager\Modules\Category\Client\Theme.h" />
     <ClInclude Include="Files\Creation\FileFactory.h" />
+    <ClInclude Include="HookFactory\FuncHook\FuncHook.h" />
+    <ClInclude Include="HookFactory\HooksFactory.h" />
+    <ClInclude Include="HookFactory\Hooks\ActorNormalTickHook.h" />
+    <ClInclude Include="HookFactory\Hooks\ClientInstanceUpdateHook.h" />
+    <ClInclude Include="HookFactory\Hooks\GammaHook.h" />
+    <ClInclude Include="HookFactory\Hooks\KeyMapHook.h" />
+    <ClInclude Include="HookFactory\Hooks\SendChatMessageHook.h" />
     <ClInclude Include="Libs\curl\curl.h" />
     <ClInclude Include="Libs\curl\curlver.h" />
     <ClInclude Include="Libs\curl\easy.h" />
@@ -515,6 +533,16 @@
     <ClInclude Include="Libs\minhook\MinHook.h" />
     <ClInclude Include="Libs\xorstr.hpp" />
     <ClInclude Include="Logs\Logger.h" />
+    <ClInclude Include="MainClient\Commands\CommandFactory.h" />
+    <ClInclude Include="MainClient\Commands\Commands\BindCommand.h" />
+    <ClInclude Include="MainClient\Commands\Commands\CommandBase.h" />
+    <ClInclude Include="MainClient\Commands\Commands\SetPositionCommand.h" />
+    <ClInclude Include="MainClient\Features\Categories\Other\Test.h" />
+    <ClInclude Include="MainClient\Features\FeatureBase\FeatureBase.h" />
+    <ClInclude Include="MainClient\Features\FeatureBase\Settings\BoolSetting.h" />
+    <ClInclude Include="MainClient\Features\FeatureBase\Settings\KeybindSetting.h" />
+    <ClInclude Include="MainClient\Features\FeatureBase\Settings\Setting.h" />
+    <ClInclude Include="MainClient\Features\FeatureFactory.h" />
     <ClInclude Include="MainClient\Lift.h" />
     <ClInclude Include="Math\IncludeAll.h" />
     <ClInclude Include="Math\Vector2.h" />
@@ -522,6 +550,23 @@
     <ClInclude Include="Math\Vector4.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="Memory\Memory.h" />
+    <ClInclude Include="SDK\Core\ClientHMDState.h" />
+    <ClInclude Include="SDK\Core\ClientInstance.h" />
+    <ClInclude Include="SDK\Core\GuiData.h" />
+    <ClInclude Include="SDK\Core\Minecraft.h" />
+    <ClInclude Include="SDK\Core\MinecraftGame.h" />
+    <ClInclude Include="SDK\Game.h" />
+    <ClInclude Include="SDK\MCTextFormat.h" />
+    <ClInclude Include="SDK\World\Actors\Actor.h" />
+    <ClInclude Include="SDK\World\Actors\ActorFlags.h" />
+    <ClInclude Include="SDK\World\Actors\ActorRuntimeId.h" />
+    <ClInclude Include="SDK\World\Actors\EntityContext.h" />
+    <ClInclude Include="SDK\World\Actors\EntityID.h" />
+    <ClInclude Include="SDK\World\Actors\EntityIDTraits.h" />
+    <ClInclude Include="SDK\World\Actors\LocalPlayer.h" />
+    <ClInclude Include="SDK\World\Actors\Mob.h" />
+    <ClInclude Include="SDK\World\Actors\Player.h" />
+    <ClInclude Include="SDK\World\GameMode\GameMode.h" />
     <ClInclude Include="Values\Offsets.h" />
     <ClInclude Include="Values\Sigs.h" />
     <ClInclude Include="Values\Vtables.h" />
