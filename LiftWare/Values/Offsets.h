@@ -1,5 +1,6 @@
 #pragma once
 #include <cstdint>
+#include <string>
 
 class Offsets {
 public:
@@ -23,6 +24,5 @@ public:
     inline static constexpr uintptr_t MCTFBaseChar1 = 0xA7;
     inline static constexpr uintptr_t PlayerMap = 0x1BC8;
     inline static constexpr uintptr_t Level = 0x250;
-    //0x250
     inline static const std::string version = "1.21.2";
 };

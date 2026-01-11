@@ -596,6 +596,7 @@
     <ClInclude Include="Time\Time.h" />
     <ClInclude Include="Values\AutoVTable\AutoVTableUpdater.h" />
     <ClInclude Include="Values\Offsets.h" />
+    <ClInclude Include="Values\Pads.h" />
     <ClInclude Include="Values\Sigs.h" />
     <ClInclude Include="Values\VersionChecker.h" />
     <ClInclude Include="Values\Vtables.h" />

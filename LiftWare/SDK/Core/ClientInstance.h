@@ -30,11 +30,9 @@ public:
 		return newMatPtr;
 	};
 
-	bool OWorldToScreen(Vector3<float> origin, Vector3<float> pos, Vector2<float>& screen, Vector2<float>& fov, Vector2<float>& displaySize) const
+	bool WorldToScreen(Vector3<float> origin, Vector3<float> pos, Vector2<float>& screen, Vector2<float>& fov, Vector2<float>& displaySize) const
 	{
 		pos = pos - origin;
-
-
 
 		float x = transformx(pos);
 		float y = transformy(pos);
@@ -108,17 +106,14 @@ public:
 	}
 
 	void grabMouse() {
-
 		Memory::CallVFunc<VTables::ClientInstanceGrabMouse, void>(this);
 	}
 
 	void releaseMouse() {
-
 		Memory::CallVFunc<VTables::ClientInstanceReleaseMouse, void>(this);
 	}
 
 	void focusMouse() {
-
 		Memory::CallVFunc<VTables::ClientInstanceFocusMouse, void>(this);
 	}
 };
