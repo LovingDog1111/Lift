@@ -564,11 +564,10 @@ void ClickGUI::onD2DRender() {
                 }
 
                 D2D::endClip();
-                if (setting->type != SettingType::ENUM) {
+                if (setting->type != SettingType::ENUM) { //enum adds extra cuz homeless
                     float settingAnimHeight2 = settingHeight * mod->animProgress;
                     yOffset += settingAnimHeight2;
                 }
-                // ENUM already increments yOffset inside
             }
         }
     }
