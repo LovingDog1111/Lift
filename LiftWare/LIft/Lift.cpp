@@ -41,41 +41,24 @@ void Lift::checkSigs() { //make sure everything is working and up to date!
     }
 }
 
-void Lift::checkOffsets() { 
-    auto check = [](uintptr_t offset, const std::string& name) {
-        if (offset == 0) {
-            Logger::ErrorLog("Offset not valid: " + name);
-        }
-        else {
-            Logger::GoodLog("Offset valid: " + name + " -> 0x" +
-                std::to_string(offset));
-        }
-        };
-
-    check(Offsets::LastLevelViewMatrix, "LastLevelViewMatrix");
-    check(Offsets::LastLevelProjMatrix, "LastLevelProjMatrix");
-    check(Offsets::mcGame, "mcGame");
-    check(Offsets::minecraft, "minecraft");
-    check(Offsets::guiData, "guiData");
-    check(Offsets::HMDState, "HMDState");
-    check(Offsets::BadRefDef, "BadRefDef");
-    check(Offsets::FovX, "FovX");
-    check(Offsets::FovY, "FovY");
-    check(Offsets::MouseGrabbed, "MouseGrabbed");
-    check(Offsets::GameMode, "GameMode");
-    check(Offsets::Player, "Player");
-    check(Offsets::LastBreakPos, "LastBreakPos");
-    check(Offsets::LastBreakFace, "LastBreakFace");
-    check(Offsets::LastDestroyProgress, "LastDestroyProgress");
-    check(Offsets::DestroyProgress, "DestroyProgress");
-    check(Offsets::MCTFBaseChar0, "MCTFBaseChar0");
-    check(Offsets::MCTFBaseChar1, "MCTFBaseChar1");
+void Lift::checkOffsets() {
+    //unused function as of now, will figure this out later!
 }
 
 void Lift::init() {
     std::string path = FileFactory::getClientPath();
     if (!FileFactory::doesFilePathExist(path))
         FileFactory::createPath(path);
+
+    std::filesystem::path logsFolder = std::filesystem::path(path) / "Logs";
+    if (!std::filesystem::exists(logsFolder)) {
+        std::filesystem::create_directory(logsFolder);
+    }
+
+    std::filesystem::path logFile = logsFolder / "Logs.txt";
+    if (!std::filesystem::exists(logFile)) {
+        std::ofstream(logFile.string());
+    }
 
     Logger::Log("Lift has been initialized!");
     initialized = true;

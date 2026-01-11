@@ -24,5 +24,8 @@ public:
     inline static constexpr uintptr_t MCTFBaseChar1 = 0xA7;
     inline static constexpr uintptr_t PlayerMap = 0x1BC8;
     inline static constexpr uintptr_t Level = 0x250;
+    inline static constexpr uintptr_t stateVector = 0x290;
+    inline static constexpr uintptr_t aabbShape = 0x298;
+    inline static constexpr uintptr_t rotation = 0x2A0;
     inline static const std::string version = "1.21.2";
 };

@@ -10,27 +10,45 @@ uintptr_t Memory::GetGameBase() {
 uintptr_t Memory::FindSignature(std::string_view sig, std::string_view name) {
     auto parsed = hat::parse_signature(sig);
     if (!parsed.has_value()) {
-        if (!name.empty())
-            Logger::ErrorLog("Signature parse failed: " + std::string(name));
-        else
-            Logger::ErrorLog("Signature parse failed");
+        if (!name.empty()) {
+            std::string msg = "Signature parse failed: " + std::string(name);
+            Logger::ErrorLog(msg);
+            Logger::LogToFile(msg);
+        }
+        else {
+            std::string msg = "Signature parse failed";
+            Logger::ErrorLog(msg);
+            Logger::LogToFile(msg);
+        }
         return 0;
     }
 
     auto result = hat::find_pattern(parsed.value());
     if (!result.has_result()) {
-        if (!name.empty())
-            Logger::ErrorLog("Signature not found: " + std::string(name));
-        else
-            Logger::ErrorLog("Signature not found");
+        if (!name.empty()) {
+            std::string msg = "Signature not found: " + std::string(name);
+            Logger::ErrorLog(msg);
+            Logger::LogToFile(msg);
+        }
+        else {
+            std::string msg = "Signature not found";
+            Logger::ErrorLog(msg);
+            Logger::LogToFile(msg);
+        }
         return 0;
     }
 
     uintptr_t addr = reinterpret_cast<uintptr_t>(result.get());
-    if (!name.empty())
-        Logger::GoodLog("Signature found: " + std::string(name));
-    else
-        Logger::GoodLog("Signature found");
+    if (!name.empty()) {
+        std::string msg = "Signature found: " + std::string(name);
+        Logger::GoodLog(msg);
+        Logger::LogToFile(msg);
+    }
+    else {
+        std::string msg = "Signature found";
+        Logger::GoodLog(msg);
+        Logger::LogToFile(msg);
+    }
 
     return addr;
 }

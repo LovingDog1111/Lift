@@ -16,9 +16,9 @@
 class Actor {
 public:
     BUILD_ACCESS(Level*, level, Offsets::Level);
-    BUILD_ACCESS(StateVectorComponent*, stateVector, 0x290);
-    BUILD_ACCESS(AABBShapeComponent*, aabbShape, 0x298);
-    BUILD_ACCESS(ActorRotationComponent*, rotation, 0x2A0);
+    BUILD_ACCESS(StateVectorComponent*, stateVector, Offsets::stateVector);
+    BUILD_ACCESS(AABBShapeComponent*, aabbShape, Offsets::aabbShape);
+    BUILD_ACCESS(ActorRotationComponent*, rotation, Offsets::rotation);
 public:
     template <typename T>
     T* getComponent() {
