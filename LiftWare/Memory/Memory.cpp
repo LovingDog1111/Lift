@@ -7,6 +7,32 @@ uintptr_t Memory::GetGameBase() {
     return base;
 }
 
+uintptr_t findSignatureSolsticeThief (std::string_view sig) {
+    auto address = hat::parse_signature(sig);
+    if (!address.has_value()) {
+        return 0;
+    }
+    auto signature = address.value();
+
+    const auto module = hat::process::get_process_module();
+    auto result = hat::find_pattern(signature, ".text", module);
+
+    if (result.has_result())
+        return reinterpret_cast<uintptr_t>(result.get());
+
+    return 0;
+}
+
+uintptr_t** Memory::getVtableFromSigSolstice(std::string_view sig) {
+    uintptr_t address = findSignatureSolsticeThief(sig);
+
+    if (address == 0x0)
+        return nullptr;
+
+    int finalOffset = *reinterpret_cast<int*>((address + 3));
+    return reinterpret_cast<uintptr_t**>(address + finalOffset + 7);
+}
+
 uintptr_t Memory::FindSignature(std::string_view sig, std::string_view name) {
     auto parsed = hat::parse_signature(sig);
     if (!parsed.has_value()) {

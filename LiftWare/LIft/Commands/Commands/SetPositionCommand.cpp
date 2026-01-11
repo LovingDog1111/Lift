@@ -30,14 +30,16 @@ bool SetPositionCommand::execute(const std::vector<std::string>& args) {
         return true;
     }
 
-    player->setPosition(Vector3<float>(x, y, z));
-
+    //player->setPosition(Vector3<float>(x, y, z));
+    /*
     Lift::displayMessage(
         "Position set to %s%.2f%s, %s%.2f%s, %s%.2f%s",
         MCTF::GRAY, x, MCTF::RESET,
         MCTF::GRAY, y, MCTF::RESET,
         MCTF::GRAY, z, MCTF::RESET
     );
+    */
+    Lift::displayMessage("SetPOS is a deleted function, needs replacement!");
 
     return true;
 }

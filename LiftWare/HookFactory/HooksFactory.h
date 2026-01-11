@@ -14,7 +14,7 @@ public:
 	static inline std::vector<FuncHook*> hooksCache;
 
 	template<typename Hook>
-	static void RequestHook(uintptr_t address) {
+	static void AddHook(uintptr_t address) {
 		if (!address)
 			return;
 
@@ -28,18 +28,18 @@ public:
 
 
 	template<typename Hook>
-	static void RequestHook(std::string_view sig, std::string signame) {
-		RequestHook<Hook>(Memory::FindSignature(sig, signame));
+	static void AddHook(std::string_view sig, std::string signame) {
+		AddHook<Hook>(Memory::FindSignature(sig, signame));
 	}
 
 	template<typename Hook>
-	static void RequestHook(uintptr_t** VTable, int index) {
-		RequestHook<Hook>((uintptr_t)VTable[index]);
+	static void AddHook(uintptr_t** VTable, int index) {
+		AddHook<Hook>((uintptr_t)VTable[index]);
 	}
 
 	template<typename Hook>
 	static void RequestRefHook(std::string_view sig) {
-		RequestHook<Hook>(Memory::ResolveRef(Memory::FindSignature(sig)));
+		AddHook<Hook>(Memory::ResolveRef(Memory::FindSignature(sig)));
 	}
 
 	template<typename TRet>

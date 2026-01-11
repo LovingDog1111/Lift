@@ -589,6 +589,7 @@
     <ClInclude Include="SDK\Core\MinecraftGame.h" />
     <ClInclude Include="SDK\Game.h" />
     <ClInclude Include="SDK\MCTextFormat.h" />
+    <ClInclude Include="SDK\Render\LevelRendererPlayer.h" />
     <ClInclude Include="SDK\World\Actors\Actor.h" />
     <ClInclude Include="SDK\World\Actors\ActorFlags.h" />
     <ClInclude Include="SDK\World\Actors\ActorRuntimeId.h" />

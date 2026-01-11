@@ -12,6 +12,8 @@
 #include "../World/Actors/Player.h"
 #include "../World/Actors/LocalPlayer.h"
 #include "../../Values/Vtables.h"
+#include "../Render/LevelRendererPlayer.h"
+#include "../World/Level/Level.h"
 
 struct GLMatrix {
 public:
@@ -70,6 +72,11 @@ public:
 	}
 };
 
+class LevelRenderer {
+public:
+	BUILD_ACCESS(LevelRendererPlayer*, renderplayer, 0x3F0)
+};
+
 class ClientInstance {
 public:
 	BUILD_ACCESS(MinecraftGame*, mcGame, Offsets::mcGame);
@@ -77,43 +84,45 @@ public:
 	BUILD_ACCESS(GuiData*, guiData, Offsets::guiData);
 public:
 	ClientHMDState* getHMDState() {
-
-		return reinterpret_cast<ClientHMDState*>((uintptr_t)this + Offsets::HMDState);
+		return Memory::callVirtualFuncSolstice<ClientHMDState*>(407, this, "GetHMDState");
 	}
 
 	LocalPlayer* getLocalPlayer() {
-
-		return Memory::CallVFunc<VTables::ClientInstanceLocalPlayerOffset, LocalPlayer*>(this);
+		return Memory::callVirtualFuncSolstice<LocalPlayer*>(31, this, "GetLocalPlayer");
 	}
 
-	void playUI(std::string str, float a1, float a2)
-	{
-		if (this == nullptr)
-			return;
-
-		Memory::CallVFunc<VTables::ClientInstancePlayUI, void>(this, str, a1, a2);
+	void playUi(const std::string& soundName, float volume,
+		float pitch) {
+		mcGame->playUI(soundName, volume, pitch);
 	}
 
 	GLMatrix* getbadrefdef() {
 		return (GLMatrix*)((uintptr_t)(this) + Offsets::BadRefDef);
 	}
 
+	LevelRenderer* getLevelRenderer() {
+		return Memory::callVirtualFuncSolstice<LevelRenderer*>(216, this, "GetLevelRenderer");
+	}
+
 	Vector2<float> getFov() {
-		Vector2<float> fov;
-		fov.x = *(float*)(reinterpret_cast<uintptr_t>(this) + Offsets::FovX);
-		fov.y = *(float*)(reinterpret_cast<uintptr_t>(this) + Offsets::FovY);
-		return fov;
+		float x = getLevelRenderer()->getrenderplayer()->getFovX();
+		float y = getLevelRenderer()->getrenderplayer()->getFovY();
+		return Vector2<float>(x, y);
 	}
 
 	void grabMouse() {
-		Memory::CallVFunc<VTables::ClientInstanceGrabMouse, void>(this);
+		Memory::callVirtualFuncSolstice<void>(VTables::ClientInstanceGrabMouse, this, "GetMouse");
 	}
 
 	void releaseMouse() {
-		Memory::CallVFunc<VTables::ClientInstanceReleaseMouse, void>(this);
+		Memory::callVirtualFuncSolstice<void>(VTables::ClientInstanceReleaseMouse, this, "ReleaseMouse");
 	}
 
 	void focusMouse() {
-		Memory::CallVFunc<VTables::ClientInstanceFocusMouse, void>(this);
+		Memory::callVirtualFuncSolstice<void>(VTables::ClientInstanceFocusMouse, this, "FocusMouse");
+	}
+
+	Level* getLevel() {
+		return Memory::callVirtualFuncSolstice<Level*>(191, this, "GetLevel");
 	}
 };

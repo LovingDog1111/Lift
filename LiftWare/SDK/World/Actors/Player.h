@@ -7,10 +7,13 @@ class Player : public Mob {
 public:
 	BUILD_ACCESS(GameMode*, gameMode, Offsets::GameMode);
 public:
-	void playEmote(std::string const& yes, bool t) {
-		return Memory::CallVFunc<VTables::PlayerPlayEmote, void, std::string const&, bool>(this, yes, t);
-	}
-	int getItemUseDuration() {
-		return Memory::CallVFunc<VTables::PlayerGetItemUseDuration, int>(this);
-	}
+    void playEmote(std::string const& yes, bool t) {
+        Memory::callVirtualFuncSolstice<void, std::string const&, bool>(
+            VTables::PlayerPlayEmote, this, "PlayerPlayEmote", yes, t);
+    }
+    int getItemUseDuration() {
+        return Memory::callVirtualFuncSolstice<int>(
+            VTables::PlayerGetItemUseDuration, this, "PlayerGetItemUseDuration");
+    }
+
 };

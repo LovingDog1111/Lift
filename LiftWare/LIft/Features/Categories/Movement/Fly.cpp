@@ -6,13 +6,13 @@ Fly::Fly() : Feature("Fly", "Allows the player to fly freely.", Category::MOVEME
 }
 
 void Fly::onNormalTick(LocalPlayer* localPlayer) {
-    Vector3<float>& velocity = localPlayer->stateVector->velocity;
+    Vector3<float>& velocity = localPlayer->getStateVectorComponent()->velocity;
     velocity = Vector3<float>(0.f, 0.f, 0.f);
 
     velocity.y += 0.0f;
 
     if (Game::canUseMoveKeys()) {
-        float yaw = localPlayer->rotation->presentRot.y;
+        float yaw = localPlayer->getActorRotationComponent()->presentRot.y;
 
         bool isForward = Game::isKeyDown('W');
         bool isLeft = Game::isKeyDown('A');

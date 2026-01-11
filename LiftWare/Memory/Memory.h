@@ -4,6 +4,7 @@
 #include <string_view>
 #include <cstdint>
 #include "../Values/Offsets.h"
+#include "../Math/IncludeAll.h"
 
 #define BUILD_ACCESS(type, name, offset)																			\
 __declspec(property(get = get##name, put = set##name)) type name;													\
@@ -14,11 +15,40 @@ namespace Memory {
     uintptr_t GetGameBase();
     uintptr_t FindSignature(std::string_view sig, std::string_view name = "");
     uintptr_t** GetVTableFromSignature(std::string_view sig);
-
+	uintptr_t** getVtableFromSigSolstice(std::string_view sig);
     template <unsigned int I, typename R, typename... A>
     inline R CallVFunc(void* p, A... a) {
         return (*reinterpret_cast<R(__thiscall***)(void*, A...)>(p))[I](p, a...);
     }
+
+	template<typename Ret, typename... Args>
+	inline Ret callVirtualFuncSolstice(int index, void* _this, const char* vtableName, Args... args) {
+		using Fn = Ret(__thiscall*)(void*, Args...);
+		auto vtable = *reinterpret_cast<uintptr_t**>(_this);
+
+		if (!vtable || !vtable[index]) {
+			std::cout << "[vfunc] Call failed at vtable '" << vtableName
+				<< "', index " << index << std::endl;
+			if constexpr (!std::is_void_v<Ret>) {
+				return Ret(); // default value for non-void
+			}
+			else {
+				return; // for void, just return
+			}
+		}
+
+		if constexpr (std::is_void_v<Ret>) {
+			reinterpret_cast<Fn>(vtable[index])(_this, args...);
+			std::cout << "[vfunc] Call succeeded at vtable '" << vtableName
+				<< "', index " << index << std::endl;
+		}
+		else {
+			Ret result = reinterpret_cast<Fn>(vtable[index])(_this, args...);
+			std::cout << "[vfunc] Call succeeded at vtable '" << vtableName
+				<< "', index " << index << std::endl;
+			return result;
+		}
+	}
 
     template <typename R, typename... A>
     inline R CallFunc(void* f, A... a) {
@@ -60,6 +90,20 @@ namespace Memory {
 		VirtualProtect(dst, size, PAGE_EXECUTE_READWRITE, &oldprotect);
 		memcpy(dst, src, size);
 		VirtualProtect(dst, size, oldprotect, &oldprotect);
+	}
+
+	template <typename T>
+	inline T read(uintptr_t address) {
+		if (!address)
+			return T(); 
+		return *reinterpret_cast<T*>(address);
+	}
+
+	template <typename T>
+	inline T* readPtr(uintptr_t address) {
+		if (!address)
+			return nullptr;
+		return reinterpret_cast<T*>(address);
 	}
 
     static uintptr_t ResolveRef(uintptr_t addr) {

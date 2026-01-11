@@ -15,51 +15,32 @@
 
 class Actor {
 public:
-    BUILD_ACCESS(Level*, level, Offsets::Level);
-    BUILD_ACCESS(StateVectorComponent*, stateVector, Offsets::stateVector);
-    BUILD_ACCESS(AABBShapeComponent*, aabbShape, Offsets::aabbShape);
-    BUILD_ACCESS(ActorRotationComponent*, rotation, Offsets::rotation);
+    BUILD_ACCESS(Level*, level, 0x1d8)
+    //BUILD_ACCESS(StateVectorComponent*, stateVector, Offsets::stateVector);
 public:
-    template <typename T>
-    T* getComponent() {
-        return const_cast<T*>(getEntityContext()->getRegistry().try_get<T>(getEntityContext()->mEntity));
+
+    AABBShapeComponent* getAABBShapeComponent() {
+        return getEntityContext()->tryGetComponent<AABBShapeComponent>();
     }
 
-    template <typename T>
-    bool hasComponent() {
-        return getEntityContext()->getRegistry().all_of<T>(getEntityContext()->mEntity);
+    StateVectorComponent* getStateVectorComponent() {
+        return getEntityContext()->tryGetComponent<StateVectorComponent>();
     }
 
-    template <typename T>
-    void getOrEmplaceComponent() {
-        return getEntityContext()->getRegistry().get_or_emplace<T>(getEntityContext()->mEntity);
-    }
-
-    template <typename T>
-    void removeComponent() {
-        getEntityContext()->getRegistry().remove<T>(getEntityContext()->mEntity);
+    ActorRotationComponent* getActorRotationComponent() {
+        return getEntityContext()->tryGetComponent<ActorRotationComponent>();
     }
 
     Vector3<float> getPosition() {
-        return stateVector ? stateVector->pos : Vector3<float>(0.f, 0.f, 0.f);
-    }
-
-    void setPosition(const Vector3<float>& pos) {
-        using func_t = __int64(__thiscall*)(Actor*, const Vector3<float>&);
-        static func_t Func = (func_t)(Memory::FindSignature(Sigs::Actor_SetPos, "Actor_SetPosition"));
-        Func(this, pos);
+        return getStateVectorComponent() ? getStateVectorComponent()->pos : Vector3<float>(0.f, 0.f, 0.f);
     }
 
     void swing() {
-        Memory::CallVFunc<VTables::ActorSwing, void>(this);
+        Memory::callVirtualFuncSolstice<void>(VTables::ActorSwing, this, "ActorSwing");
     }
 
     ActorHeadRotationComponent* getActorHeadRotationComponent() {
-        using func_t = ActorHeadRotationComponent * (__cdecl*)(__int64, __int64);
-        static func_t Func = (func_t)(Memory::getFuncFromCall(Memory::FindSignature(Sigs::TryGetActorHeadRotationComponent)));
-        __int64 a1 = *(__int64*)((__int64)this + 0x10);
-        __int64 a2 = (__int64)&(*(__int64*)((__int64)this + 0x18));
-        return Func(a1, a2);
+        return getEntityContext()->tryGetComponent<ActorHeadRotationComponent>();
     }
 
     EntityContext* getEntityContext()

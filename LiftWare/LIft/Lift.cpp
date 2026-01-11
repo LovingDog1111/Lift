@@ -27,17 +27,13 @@ void Lift::checkPads() { //we.. cant really check this, so this will have to do.
 
 void Lift::checkSigs() { //make sure everything is working and up to date!
     { 
-        Memory::FindSignature(Sigs::ClientInstanceUpdate, "ClientInstance_Update");
+       // Memory::FindSignature(Sigs::ClientInstanceUpdate, "ClientInstance_Update");
         Memory::getFuncFromCall(Memory::FindSignature(Sigs::ClientInstanceScreenModelSendChatMessage, "ClientInstanceScreenModelSendChatMessage")); //this should work, right?
-        Memory::FindSignature(Sigs::OptionsGetGamma, "Options_GetGamma");
-        Memory::FindSignature(Sigs::OptionsGetViewPerspective, "Options_GetViewPerspective");
-        Memory::FindSignature(Sigs::Actor_SetPos, "Actor_SetPos");
         Memory::FindSignature(Sigs::GameMode_BaseUseItem, "GameMode_BaseUseItem");
         Memory::FindSignature(Sigs::GameMode_GetDestroyRate, "GameMode_GetDestroyRate");
 		Memory::FindSignature(Sigs::PlayerVtable, "PlayerVTable");
 		Memory::FindSignature(Sigs::KeyPressFunc, "KeyMap");
 		Memory::FindSignature(Sigs::ActorSetRot, "ActorSetRot");
-        Memory::getFuncFromCall(Memory::FindSignature(Sigs::TryGetActorHeadRotationComponent, "TryGetActorHeadRotationComponent"));
     }
 }
 

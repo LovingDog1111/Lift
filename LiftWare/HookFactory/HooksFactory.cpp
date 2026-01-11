@@ -17,30 +17,35 @@
 void HooksFactory::init() {
 	MH_Initialize();
 
-	RequestHook<ClientInstanceUpdateHook>(Sigs::ClientInstanceUpdate, "ClientInstanceUpdate");
-	RequestHook<GammaHook>(Sigs::OptionsGetGamma, "Options_GetGamma");
-	RequestHook<SendChatMessageHook>(Memory::getFuncFromCall(Memory::FindSignature(Sigs::ClientInstanceScreenModelSendChatMessage, "ClientInstanceScreenModelSendChatMessage")));
-	RequestHook<KeyMapHook>(Sigs::KeyPressFunc, "KeyPressFunc");
-	RequestHook<KeyMouseHook>(Sigs::KeyMouseFunc, "KeyMouseFunc");
-	RequestHook<ActorSetRotHook>(Sigs::ActorSetRot, "ActorSetRot");
-	RequestHook<HudCursorRendererHook>(Sigs::HudCursorRenderer_render, "HudCursorRenderer_render");
-	RequestHook<HurtCamHook>(Sigs::CauseHurtCamFunc, "CauseHurtCamFunc");
+	AddHook<ClientInstanceUpdateHook>(Memory::FindSignature(Sigs::ClientInstanceUpdate, "ClientInstanceUpdate"));
+
+	AddHook<SendChatMessageHook>(Memory::getFuncFromCall(Memory::FindSignature(Sigs::ClientInstanceScreenModelSendChatMessage, "ClientInstanceScreenModelSendChatMessage")));
+	AddHook<KeyMapHook>(Sigs::KeyPressFunc, "KeyPressFunc");
+	AddHook<KeyMouseHook>(Sigs::KeyMouseFunc, "KeyMouseFunc");
+	AddHook<ActorSetRotHook>(Sigs::ActorSetRot, "ActorSetRot");
+	AddHook<HudCursorRendererHook>(Sigs::crosshair, "HudCursorRenderer_render");
+	AddHook<HurtCamHook>(Sigs::CauseHurtCamFunc, "CauseHurtCamFunc");
 
 	{
-		uintptr_t** PlayerVTable = (uintptr_t**)Memory::GetVTableFromSignature(Sigs::PlayerVtable);
-		RequestHook<ActorNormalTickHook>(PlayerVTable, 26);
+		uintptr_t** PlayerVTable = (uintptr_t**)(uintptr_t)Memory::getVtableFromSigSolstice(Sigs::PlayerVtable);
+		AddHook<ActorNormalTickHook>(PlayerVTable, VTables::OnNormalTickIndex);
 	}
 
+	{
+		uintptr_t** OptionsVtable = (uintptr_t**)(uintptr_t)Memory::GetVTableFromSignature(
+			Sigs::OptionsVTable);
+		AddHook<GammaHook>(OptionsVtable, VTables::GammaHook);
+	}
 
-	if (kiero::init(kiero::RenderType::D3D12) == kiero::Status::Success) {
+	if (kiero::init(kiero::RenderType::D3D12) == kiero::Status::Success) { //Im pretty sure this never changes, so im not going to add it to the vtable class.
 		uintptr_t** methodsTable = (uintptr_t**)kiero::getMethodsTable();
-		RequestHook<PresentHook>(methodsTable, 140);
-		RequestHook<ResizeBuffersHook>(methodsTable, 145);
+		AddHook<PresentHook>(methodsTable, 140);
+		AddHook<ResizeBuffersHook>(methodsTable, 145);
 	}
 	else if (kiero::init(kiero::RenderType::D3D11) == kiero::Status::Success) {
 		uintptr_t** methodsTable = (uintptr_t**)kiero::getMethodsTable();
-		RequestHook<PresentHook>(methodsTable, 8);
-		RequestHook<ResizeBuffersHook>(methodsTable, 13);
+		AddHook<PresentHook>(methodsTable, 8);
+		AddHook<ResizeBuffersHook>(methodsTable, 13);
 	}
 	else {
 		return;

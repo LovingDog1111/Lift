@@ -34,6 +34,7 @@ private:
     bool isHoldingLeftClick;
     bool isHoldingRightClick;
     float rounding = 6.f;
+    Vector2<float> dragOffset;
 public:
     std::vector<Header*> windowList;
     Header* draggingWindowPtr = nullptr;

@@ -15,7 +15,7 @@ private:
 		static NoHurtCam* noHurtCamMod = FeatureFactory::getFeature<NoHurtCam>();
 
 		if (noHurtCamMod->isEnabled() && a2 == 2 && a1 == Game::getLocalPlayer()) {
-			uint32_t* a4 = *(uint32_t**)((uintptr_t)a1 + 0x5A8); // MobAnimation::decrementHurtTime
+			uint32_t* a4 = *(uint32_t**)((uintptr_t)a1 + 0x420); // MobAnimation::decrementHurtTime
 			if (a4 != nullptr) {
 				*a4 = 0;
 			}

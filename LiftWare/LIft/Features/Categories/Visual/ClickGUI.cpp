@@ -203,15 +203,21 @@ void ClickGUI::onD2DRender() {
         Vector2 hText(hRect.x + (headerWidth - D2D::getTextWidth(window->name, headerTextSize, true, true)) * 0.5f,
             hRect.y + (headerTextHeight - D2D::getTextHeight("X", headerTextSize, true, true)) * 0.5f);
 
-        if (hRect.contains(mousePos)) {
-            if (isLeftClickDown) {
-                draggingWindowPtr = window;
-                isLeftClickDown = false;
-            }
-            else if (isRightClickDown) {
-                window->extended = !window->extended;
-                isRightClickDown = false;
-            }
+        if (draggingWindowPtr == nullptr && hRect.contains(mousePos) && isLeftClickDown) {
+            draggingWindowPtr = window;
+            dragOffset = mousePos - window->pos; // remember where you clicked inside the window
+            isLeftClickDown = false;
+        }
+
+        // smooth movement for the dragging window
+        if (draggingWindowPtr == window) {
+            window->pos = mousePos - dragOffset;
+        }
+
+        // right-click to toggle the window extension
+        if (hRect.contains(mousePos) && isRightClickDown) {
+            window->extended = !window->extended;
+            isRightClickDown = false;
         }
 
         window->animProgress += (window->extended ? 0.3f : -0.3f) * (D2D::deltaTime * animSpeed);

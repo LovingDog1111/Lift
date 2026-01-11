@@ -7,7 +7,7 @@
 
 class Client {
 public:
-    inline static const std::string TargetVersion = "1.21.2";
+    inline static const std::string TargetVersion = "1.21.94";
 
     bool isUpToDate() {
         if (TargetVersion == Offsets::version &&

@@ -3,11 +3,13 @@
 
 class LocalPlayer : public Player {
 public:
-	void displayClientMessage(const std::string& message) {
-		Memory::CallVFunc<VTables::LocalPlayerDisplayClientMessage, void, const std::string&>(this, message);
-	}
+    void displayClientMessage(const std::string& message) {
+        Memory::callVirtualFuncSolstice<void, const std::string&>(
+            VTables::LocalPlayerDisplayClientMessage, this, "LocalPlayerDisplayClientMessage", message);
+    }
 
-	void resetRot() {
-		Memory::CallVFunc<VTables::resetRot, void>(this);
-	}
+    void resetRot() {
+        Memory::callVirtualFuncSolstice<void>(
+            VTables::resetRot, this, "resetRot");
+    }
 };

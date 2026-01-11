@@ -4,7 +4,9 @@
 
 class Mob : public Actor {
 public:
-	void setSprinting(bool shouldSprint) {
-		Memory::CallVFunc<VTables::MobSetSprinting, void, bool>(this, shouldSprint);
-	}
+    void setSprinting(bool shouldSprint) {
+        Memory::callVirtualFuncSolstice<void, bool>(
+            VTables::MobSetSprinting, this, "MobSetSprinting", shouldSprint);
+    }
 };
+

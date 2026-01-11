@@ -8,10 +8,11 @@ KillAura::KillAura() : Feature("Killaura", "Automatically attacks nearby players
 
 std::vector<Actor*> KillAura::getTargets(Actor* localPlayer, float range) {
     std::vector<Actor*> targets;
+    if (!Game::getClientInstance() || !Game::getLocalPlayer()) return targets;
     for (Actor* actor : localPlayer->level->getRuntimeActorList()) {
         if (!actor) continue;
-        if (!actor->getaabbShape()) continue;
-        if (!actor->getstateVector()) continue;
+        if (!actor->getAABBShapeComponent()) continue;
+        if (!actor->getStateVectorComponent()) continue;
         if (actor == localPlayer) continue;
 
         Vector3<float> diff = actor->getPosition() - localPlayer->getPosition();
@@ -38,12 +39,12 @@ void KillAura::onUpdateRotation(LocalPlayer* localPlayer) {
         angles = localPlayer->getPosition().CalcAngle(closest->getPosition());
     }
 
-    auto* rot = localPlayer->getComponent<ActorRotationComponent>();
+    auto* rot = localPlayer->getActorRotationComponent();
     if (rot) {
         rot->presentRot.y = angles.y;
         rot->presentRot.x = angles.x;
     }
-    auto* headrot = localPlayer->getComponent<ActorHeadRotationComponent>();
+    auto* headrot = localPlayer->getActorHeadRotationComponent();
     if (headrot) {
         headrot->headYaw = angles.y;
     }
@@ -53,6 +54,7 @@ void KillAura::onNormalTick(LocalPlayer* localPlayer) {
     if (!localPlayer) return;
 
     auto targets = getTargets(localPlayer, reach);
+    if (targets.empty()) return;
     for (Actor* target : targets) {
         if (target) {
             localPlayer->swing();
