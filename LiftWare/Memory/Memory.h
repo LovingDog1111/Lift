@@ -60,6 +60,14 @@ namespace Memory {
         return reinterpret_cast<R(*)(A...)>(f)(a...);
     }
 
+	template <typename TRet, typename... TArgs>
+	static TRet callFastcall(uintptr_t func, TArgs... args)
+	{
+		using Fn = TRet(__fastcall*)(TArgs...);
+		Fn f = reinterpret_cast<Fn>(func);
+		return f(args...);
+	}
+
     inline uintptr_t getFuncFromCall(uintptr_t address) {
         if (address == 0)
             return 0;

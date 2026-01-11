@@ -41,5 +41,5 @@ void Game::DisplayClientMessage(const char* fmt, ...) {
 	va_end(arg);
 
 	std::string messageStr(message);
-	localPlayer->displayClientMessage(messageStr);
+	Game::getClientInstance()->getguiData()->displayMessage(messageStr);
 }

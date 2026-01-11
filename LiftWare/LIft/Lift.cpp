@@ -83,5 +83,5 @@ void Lift::displayMessage(const char* fmt, ...) {
 	}
 
 	std::string messageStr = headerMessage + std::string(message);
-	localPlayer->displayClientMessage(messageStr);
+	Game::getClientInstance()->getguiData()->displayMessage(messageStr);
 }

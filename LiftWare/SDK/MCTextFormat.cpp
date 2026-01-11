@@ -1,5 +1,4 @@
 #include "MCTextFormat.h"
-#include "../Values/Offsets.h"
 
 char MCTF::BASE_CHARACTER[2];
 char MCTF::BLACK[4];
@@ -35,8 +34,8 @@ void MCTF::initColor(char* variable, char color) {
 }
 
 void MCTF::initMCTF() {
-	BASE_CHARACTER[0] = (char)(Offsets::MCTFBaseChar0);
-	BASE_CHARACTER[1] = (char)(Offsets::MCTFBaseChar1);
+	BASE_CHARACTER[0] = (char)(0xC2);
+	BASE_CHARACTER[1] = (char)(0xA7);
 	initColor(BLACK, '0');
 	initColor(DARK_BLUE, '1');
 	initColor(DARK_GREEN, '2');
