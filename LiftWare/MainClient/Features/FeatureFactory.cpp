@@ -12,7 +12,6 @@ void FeatureFactory::init() {
 		return lhs->getModuleName() < rhs->getModuleName();
 		});
 
-	getFeature<ClickGUI>()->InitClickGUI();
 	getFeature<ClickGUI>()->setEnabled(false);
 	getFeature<ArrayList>()->setEnabled(false);
 

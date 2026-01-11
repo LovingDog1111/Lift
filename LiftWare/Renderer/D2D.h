@@ -12,6 +12,7 @@
 #include "Colors.h"
 
 namespace D2D {
+	static const Color GLOW_USE_MAIN_COLOR;
 	extern float deltaTime;
 	enum class CornerRoundType {
 		None,
@@ -43,6 +44,19 @@ namespace D2D {
 	void drawTriangle(const Vector2<float>& p1, const Vector2<float>& p2, const Vector2<float>& p3, const Color& color, float width = 1.0f);
 	void fillRoundedRect(const Vector4<float>& rect, const Color& color, float radius);
 	void drawRoundedRect(const Vector4<float>& rect, const Color& color, float radius, float width = 1.0f);
+	void fillGradientRectangleVertical(const Vector4<float>& rect, const Color& startColor, const Color& endColor, float rounding, CornerRoundType roundType);
+	void fillGradientRectangle(const Vector4<float>& rect, const Color& startColor, const Color& endColor, float rounding, CornerRoundType roundType);
 	void beginClip(const Vector4<float>& clipRect);
 	void endClip();
+	void drawGlowingCircle(const Vector2<float>& center, float radius, const Color& color, float glowRadius, float outlineThickness = 1.0f);
+	void fillGlowingCircle(const Vector2<float>& center, float radius, const Color& color, float glowRadius);
+	void drawNeuralNetworkParticlesOptimized(
+		const Vector2<float>& screenSize,
+		const Color& color,
+		int particleCount,
+		float particleRadius,
+		float lineWidth,
+		float maxDistance
+	);
+	void drawStarParticles(const Vector2<float>& screenSize, const Color& color, int particleCount, float speed, float size);
 };

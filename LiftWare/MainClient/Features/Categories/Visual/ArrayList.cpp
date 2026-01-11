@@ -10,9 +10,10 @@ void ArrayList::onD2DRender() {
     Vector2<float> windowSize = D2D::getWindowSize();
     float xMargin = 15.f;
     float yOffset = 15.f;
+    Color accentColor1 = Colors::getWaveColor(Color(255.f, 30.f, 0.f), Color(255.f, 190.f, 0.f), 0);
+    Color accentColor2 = Colors::getWaveColor(Color(255.f, 30.f, 0.f), Color(255.f, 190.f, 0.f), 500);
 
     std::vector<Feature*> modules;
-
     for (Feature* mod : FeatureFactory::moduleList) {
         if (mod->isEnabled() && mod->isVisible())
             modules.push_back(mod);
@@ -22,34 +23,57 @@ void ArrayList::onD2DRender() {
         return a->getModuleName().length() > b->getModuleName().length();
         });
 
-    float heightOffset = 0.f;
-    int index = 0;
+    float currentY = yOffset;
+    float maxRight = 0.f;
 
     for (size_t i = 0; i < modules.size(); i++) {
-        index++;
-
         Feature* mod = modules[i];
         std::string moduleName = mod->getModuleName();
         float textWidth = D2D::getTextWidth(moduleName, 1.f) * 0.8f;
         float textHeight = D2D::getTextHeight(moduleName, 1.f) * 0.8f;
 
-        float originalWidth = D2D::getTextWidth(moduleName, 1.f) + 6.f;
-        float rectWidth = originalWidth * 0.9f; 
+        float rectWidth = textWidth + 6.f;
         float rectLeft = windowSize.x - xMargin - rectWidth;
         float rectRight = windowSize.x - xMargin;
-        float rectTop = yOffset + heightOffset;
-        float rectBottom = rectTop + D2D::getTextHeight(moduleName, 1.f) + 2.f;
+        float rectTop = currentY;
+        float rectBottom = rectTop + textHeight;
+
+        if (rectRight > maxRight)
+            maxRight = rectRight;
 
         Vector4<float> bgRect(rectLeft, rectTop, rectRight, rectBottom);
-        D2D::fillRoundedRect(bgRect, Color(0, 0, 0, 125), 3.f);
 
-        Color rainbow = Colors::getRainbowColor(4.f, 1.f, 1.f, index * 125);
-        D2D::fillRectangle(Vector4<float>(rectLeft + 2.f, rectTop, rectLeft, rectBottom), rainbow);
+        D2D::CornerRoundType roundType = D2D::CornerRoundType::None;
+        if (i == 0)
+            roundType = D2D::CornerRoundType::TopOnly;
+        else if (i == modules.size() - 1)
+            roundType = D2D::CornerRoundType::BottomOnly;
 
-        float textX = rectLeft + ((rectRight - rectLeft) - textWidth) / 2.f;
-        float textY = rectTop + ((rectBottom - rectTop) - textHeight) / 2.f;
-        D2D::drawText(Vector2<float>(textX, textY), moduleName, Color(255, 255, 255, 255), 0.8f);
+        D2D::fillRectangle(bgRect, Color(0, 0, 0, 125), 3.f, roundType);
 
-        heightOffset += (rectBottom - rectTop) + 2.f;
+        float textX = rectLeft + (rectWidth - textWidth) / 2.f;
+        float textY = rectTop;
+        float letterX = textX;
+
+        for (size_t c = 0; c < moduleName.size(); c++) {
+            std::string letter = moduleName.substr(c, 1);
+            float letterWidth = D2D::getTextWidth(letter, 1.f) * 0.8f;
+
+            float t = (letterX - textX + letterWidth * 0.5f) / textWidth;
+            int r = (int)(accentColor1.r * (1 - t) + accentColor2.r * t);
+            int g = (int)(accentColor1.g * (1 - t) + accentColor2.g * t);
+            int b = (int)(accentColor1.b * (1 - t) + accentColor2.b * t);
+            int a = (int)(accentColor1.a * (1 - t) + accentColor2.a * t);
+
+            D2D::drawText(Vector2<float>(letterX, textY), letter, Color(r, g, b, a), 0.8f);
+            letterX += letterWidth;
+        }
+
+        currentY = rectBottom;
+    }
+
+    if (!modules.empty()) {
+        Vector4<float> sidelineRect(maxRight + 2.f, yOffset, maxRight, currentY);
+        D2D::fillGradientRectangleVertical(sidelineRect, accentColor1, accentColor2, 0.f, D2D::CornerRoundType::None);
     }
 }

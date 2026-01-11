@@ -31,6 +31,7 @@ DWORD WINAPI initClient(LPVOID lpParam) {
     FeatureFactory::init();
     CommandFactory::init();
     HooksFactory::init();
+    FeatureFactory::getFeature<ClickGUI>()->InitClickGUI(); //initialize AFTER THE DAmN CLIENT INSTANCE
 
     while (true) {
         Sleep(25);

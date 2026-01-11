@@ -9,7 +9,7 @@
 #include "Hooks/ActorSetRotHook.h"
 #include "Hooks/ResizeBuffersHook.h"
 #include "Hooks/PresentHook.h"
-
+#include "../MainClient/Features/FeatureFactory.h"
 #include "../Values/Sigs.h"
 
 void HooksFactory::init() {

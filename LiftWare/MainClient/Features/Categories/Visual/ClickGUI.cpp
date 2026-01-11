@@ -44,6 +44,9 @@ bool ClickGUI::isVisible() {
 }
 
 void ClickGUI::onKeyUpdate(int key, bool isDown) {
+    if (!initialized)
+        return;
+
 	if (!isEnabled()) {
 		if (key == getKeybind() && isDown) {
 			setEnabled(true);
@@ -68,6 +71,8 @@ void ClickGUI::onKeyUpdate(int key, bool isDown) {
 
 void ClickGUI::onMouseUpdate(Vector2<float> mousePosA, char mouseButton, char isDown) {
 	if (!Game::getClientInstance()) return;
+    if (!initialized)
+        return;
 
 	mousePos = mousePosA;
 
@@ -102,213 +107,223 @@ void ClickGUI::onMouseUpdate(Vector2<float> mousePosA, char mouseButton, char is
 }
 
 void ClickGUI::InitClickGUI() {
-	setEnabled(false);
+    setEnabled(false);
 
-	Vector2<float> startPos = Vector2<float>(25.f, 4.f);
+    Vector2<float> screenSize = Game::clientInstance->guiData->windowSizeReal;
+    float windowWidth = 200.f;
+    float windowHeight = 20.f;
+    int numWindows = 6;
+    float totalWidth = numWindows * windowWidth;
+    float totalHeight = windowHeight;
 
-	windowList.push_back(new Header("Combat", startPos, Category::COMBAT));
-	startPos.x += 190.f;
-	windowList.push_back(new Header("Movement", startPos, Category::MOVEMENT));
-	startPos.x += 190.f;
-	windowList.push_back(new Header("Visual", startPos, Category::VISUAL));
-	startPos.x += 190.f;
-	windowList.push_back(new Header("Player", startPos, Category::PLAYER));
-	startPos.x += 190.f;
-	windowList.push_back(new Header("Exploit", startPos, Category::EXPLOIT));
-	startPos.x += 190.f;
-	windowList.push_back(new Header("Other", startPos, Category::OTHER));
-	startPos.x += 190.f;
+    float startX = (screenSize.x - totalWidth) * 0.5f;
+    float startY = screenSize.y - 600.f;
 
-	initialized = true;
+    Vector2<float> startPos(startX, startY);
+
+    windowList.push_back(new Header("Combat", startPos, Category::COMBAT));
+    startPos.x += windowWidth;
+    windowList.push_back(new Header("Movement", startPos, Category::MOVEMENT));
+    startPos.x += windowWidth;
+    windowList.push_back(new Header("Visual", startPos, Category::VISUAL));
+    startPos.x += windowWidth;
+    windowList.push_back(new Header("Player", startPos, Category::PLAYER));
+    startPos.x += windowWidth;
+    windowList.push_back(new Header("Exploit", startPos, Category::EXPLOIT));
+    startPos.x += windowWidth;
+    windowList.push_back(new Header("Other", startPos, Category::OTHER));
+
+    initialized = true;
 }
 
+
 void ClickGUI::onD2DRender() {
-	if (!initialized)
-		return;
+    if (!initialized)
+        return;
 
-	if (Game::canUseMoveKeys())
-		Game::clientInstance->releaseMouse();
+    if (Game::canUseMoveKeys())
+        Game::clientInstance->releaseMouse();
 
-	static Vector2<float> oldMousePos = mousePos;
-	mouseDelta = mousePos - oldMousePos;
-	oldMousePos = mousePos;
-	std::string descriptionText = "NULL";
+    static Vector2<float> oldMousePos = mousePos;
+    mouseDelta = mousePos - oldMousePos;
+    oldMousePos = mousePos;
+    std::string descriptionText = "NULL";
+    Color accentColor1 = Colors::getWaveColor(Color(255.f, 30.f, 0.f), Color(255.f, 190.f, 0.f), 0);
+    Color accentColor2 = Colors::getWaveColor(Color(255.f, 30.f, 0.f), Color(255.f, 190.f, 0.f), 500);
 
-	Vector2<float> screenSize = Game::clientInstance->guiData->windowSizeReal;
+    Vector2<float> screenSize = Game::clientInstance->guiData->windowSizeReal;
+    D2D::fillRectangle(Vector4<float>(0.f, 0.f, screenSize.x, screenSize.y), Color(0, 0, 0, 125));
+    D2D::addBlur(Vector4<float>(0.f, 0.f, screenSize.x, screenSize.y), 3.f);
 
-	float textSize = 0.5f;
-	float textPaddingX = 5.f * textSize;
-	float textHeight = D2D::getTextHeight("X", textSize * 1.65f);
+    D2D::fillGradientRectangleVertical(Vector4<float>(0.f, 0.f, screenSize.x, screenSize.y), Color(accentColor1.r, accentColor1.g, accentColor1.b, 100.f), Color(0.f, 0.f, 0.f, 20.f), 0.f, D2D::CornerRoundType::None);
 
-	float headerTextSize = 0.65f;
-	float headerTextHeight = D2D::getTextHeight("X", textSize * 1.75f);
+    D2D::drawStarParticles(screenSize, accentColor1, 167, 0.1f, 5.f);
 
-	float rounding = 6.f;
+    float textSize = 0.6f;
+    float textPaddingX = 5.f * textSize;
+    float textHeight = D2D::getTextHeight("X", textSize * 1.65f);
 
-	Color darkerGray = Color(12.f, 12.f, 12.f);
-	Color darkGray = Color(18.f, 18.f, 18.f);
-	Color Gray = Color(35.f, 35.f, 35.f);
-	Color SolsticeGray = Color(42.f, 42.f, 42.f);
-	Color SolsticeBlack = Color(0.f, 0.f, 0.f);
-	Color accentColor = Color(130.f, 211.f, 195.f);
+    float headerTextSize = 0.75f;
+    float headerTextHeight = D2D::getTextHeight("X", textSize * 1.75f);
 
-	for (auto& window : windowList) {
-		if (draggingWindowPtr == window)
-			window->pos = window->pos + mouseDelta;
+    float rounding = 6.f;
 
-		float desiredWidth = 155.f + textPaddingX * 2.f;
-		float headerWidth = desiredWidth;
+    Color Gray = Color(35.f, 35.f, 35.f);
+    Color SolsticeBlack = Color(0.f, 0.f, 0.f);
 
-		float clampedX = window->pos.x;
-		if (clampedX + headerWidth > screenSize.x)
-			clampedX = screenSize.x - headerWidth;
-		if (clampedX < 0.f)
-			clampedX = 0.f;
+    for (auto& window : windowList) {
+        if (draggingWindowPtr == window)
+            window->pos = window->pos + mouseDelta;
 
-		Vector4<float> hRect(
-			clampedX,
-			window->pos.y,
-			clampedX + headerWidth,
-			window->pos.y + headerTextHeight
-		);
+        float desiredWidth = 185.f + textPaddingX * 2.f;
+        float headerWidth = desiredWidth;
 
-		Vector2 hText(
-			hRect.x + (headerWidth - D2D::getTextWidth(window->name, headerTextSize, true, true)) * 0.5f,
-			hRect.y + (headerTextHeight - D2D::getTextHeight("X", headerTextSize, true, true)) * 0.5f
-		);
+        float clampedX = window->pos.x;
+        if (clampedX + headerWidth > screenSize.x)
+            clampedX = screenSize.x - headerWidth;
+        if (clampedX < 0.f)
+            clampedX = 0.f;
 
-		if (hRect.contains(mousePos)) {
-			if (isLeftClickDown) {
-				draggingWindowPtr = window;
-				isLeftClickDown = false;
-			}
-			else if (isRightClickDown) {
-				window->extended = !window->extended;
-				isRightClickDown = false;
-			}
-		}
+        Vector4<float> hRect(clampedX, window->pos.y, clampedX + headerWidth, window->pos.y + headerTextHeight);
+        Vector2 hText(hRect.x + (headerWidth - D2D::getTextWidth(window->name, headerTextSize, true, true)) * 0.5f,
+            hRect.y + (headerTextHeight - D2D::getTextHeight("X", headerTextSize, true, true)) * 0.5f);
 
-		D2D::fillRectangle(hRect, SolsticeBlack, rounding, D2D::CornerRoundType::TopOnly);
-		D2D::drawText(hText, window->name, Color(255, 255, 255), headerTextSize, true, true);
+        if (hRect.contains(mousePos)) {
+            if (isLeftClickDown) {
+                draggingWindowPtr = window;
+                isLeftClickDown = false;
+            }
+            else if (isRightClickDown) {
+                window->extended = !window->extended;
+                isRightClickDown = false;
+            }
+        }
 
-		if (!window->extended)
-			continue;
+        D2D::fillRectangle(hRect, SolsticeBlack, rounding, D2D::CornerRoundType::TopOnly);
+        D2D::drawText(hText, window->name, Color(255.f, 255.f, 255.f), headerTextSize, true, true);
 
-		float yOffset = hRect.w;
+        Vector4<float> underlineRect(hRect.x, hRect.w - 2.0f, hRect.z, hRect.w);
+        D2D::fillGradientRectangle(underlineRect, accentColor1, accentColor2, 1.0f, D2D::CornerRoundType::None);
 
-		for (auto& mod : window->moduleList) {
-			Vector4 mRect(
-				hRect.x,
-				yOffset,
-				hRect.z,
-				yOffset + textHeight
-			);
+        if (!window->extended)
+            continue;
 
-			Vector2 mText(
-				mRect.x + (mRect.z - mRect.x - D2D::getTextWidth(mod->getModuleName(), textSize)) * 0.5f,
-				mRect.y + (textHeight - D2D::getTextHeight("X", textSize)) * 0.5f
-			);
+        float yOffset = hRect.w;
 
-			if (mRect.contains(mousePos)) {
-				descriptionText = mod->getDescription();
-				if (isLeftClickDown) {
-					mod->toggle();
-					isLeftClickDown = false;
-				}
-				else if (isRightClickDown) {
-					mod->extended = !mod->extended;
-					isRightClickDown = false;
-				}
-			}
+        for (size_t i = 0; i < window->moduleList.size(); i++) {
+            auto& mod = window->moduleList[i];
+            Vector4 mRect(hRect.x, yOffset, hRect.z, yOffset + textHeight);
+            Vector2 mText(
+                mRect.x + (mRect.z - mRect.x - D2D::getTextWidth(mod->getModuleName(), textSize)) * 0.5f,
+                mRect.y + (textHeight - D2D::getTextHeight("X", textSize)) * 0.5f
+            );
 
-			if (&mod == &window->moduleList.back())
-				D2D::fillRectangle(mRect, mod->isEnabled() ? accentColor : Gray, rounding, D2D::CornerRoundType::BottomOnly);
-			else
-				D2D::fillRectangle(mRect, mod->isEnabled() ? accentColor : Gray);
+            if (mRect.contains(mousePos)) {
+                descriptionText = mod->getDescription();
+                if (isLeftClickDown) { mod->toggle(); isLeftClickDown = false; }
+                else if (isRightClickDown) { mod->extended = !mod->extended; isRightClickDown = false; }
+            }
 
-			D2D::drawText(mText, mod->getModuleName(),
-				mod->isEnabled() ? Color(255, 255, 255) : Color(175, 175, 175),
-				textSize);
+            bool isLastModule = (i == window->moduleList.size() - 1);
+            float moduleRounding = (isLastModule && !mod->extended) ? rounding : 0.f;
 
-			yOffset += textHeight;
+            D2D::fillGradientRectangle(
+                mRect,
+                mod->isEnabled() ? accentColor1 : Gray,
+                mod->isEnabled() ? accentColor2 : Gray,
+                moduleRounding,
+                moduleRounding > 0.f ? D2D::CornerRoundType::BottomOnly : D2D::CornerRoundType::None
+            );
 
-			if (!mod->extended)
-				continue;
+            D2D::drawText(
+                mText,
+                mod->getModuleName(),
+                mod->isEnabled() ? Color(255.f, 255.f, 255.f) : Color(175.f, 175.f, 175.f),
+                textSize
+            );
 
-			yOffset += 1.5f;
+            yOffset += textHeight;
 
-			for (auto& setting : mod->getSettingList()) {
-				if (setting->type != SettingType::BOOL &&
-					setting->type != SettingType::KEYBIND)
-					continue;
+            if (!mod->extended)
+                continue;
 
-				Vector4 sRect(
-					mRect.x + 6.f,
-					yOffset,
-					mRect.z - 6.f,
-					yOffset + textHeight
-				);
+            auto& settings = mod->getSettingList();
+            for (size_t j = 0; j < settings.size(); j++) {
+                auto& setting = settings[j];
+                if (setting->type != SettingType::BOOL && setting->type != SettingType::KEYBIND)
+                    continue;
 
-				Vector2 sText(
-					sRect.x + textPaddingX,
-					sRect.y + (textHeight - D2D::getTextHeight("X", textSize)) * 0.5f
-				);
+                Vector4 sRect(
+                    mRect.x,
+                    yOffset,
+                    mRect.z,
+                    yOffset + textHeight
+                );
 
-				if (sRect.contains(mousePos))
-					descriptionText = setting->description;
+                Vector2 sText(
+                    sRect.x + textPaddingX,
+                    sRect.y + (textHeight - D2D::getTextHeight("X", textSize)) * 0.5f
+                );
 
-				if (setting->type == SettingType::BOOL) {
-					auto* bs = static_cast<BoolSetting*>(setting);
-					bool& value = *bs->value;
+                if (sRect.contains(mousePos))
+                    descriptionText = setting->description;
 
-					if (sRect.contains(mousePos) && isLeftClickDown) {
-						value = !value;
-						isLeftClickDown = false;
-					}
+                bool isLastSetting = (j == settings.size() - 1);
 
-					D2D::drawText(sText, setting->name,
-						!value ? Color(255, 255, 255) : Color(175, 175, 175),
-						textSize);
+                D2D::fillRectangle(
+                    sRect,
+                    Gray,
+                    isLastSetting ? rounding : 0.f,
+                    isLastSetting ? D2D::CornerRoundType::BottomOnly : D2D::CornerRoundType::None
+                );
+                if (setting->type == SettingType::BOOL) {
+                    auto* bs = static_cast<BoolSetting*>(setting);
+                    bool& value = *bs->value;
 
-					float box = textHeight * 0.75f;
-					Vector4 checkbox(
-						sRect.z - box - textPaddingX,
-						sRect.y + (textHeight - box) * 0.5f,
-						sRect.z - textPaddingX,
-						sRect.y + (textHeight - box) * 0.5f + box
-					);
+                    if (sRect.contains(mousePos) && isLeftClickDown) {
+                        value = !value;
+                        isLeftClickDown = false;
+                    }
 
-					if (!value)
-						D2D::fillRectangle(checkbox, Color(255, 0, 0));
+                    D2D::drawText(
+                        sText,
+                        setting->name,
+                        !value ? Color(255.f, 255.f, 255.f) : Color(175.f, 175.f, 175.f),
+                        textSize
+                    );
 
-					D2D::drawRectangle(checkbox, Color(255, 255, 255));
-				}
+                    float circleRadius = textHeight * 0.2f;
+                    Vector2<float> circleCenter(
+                        sRect.z - circleRadius - textPaddingX,
+                        sRect.y + textHeight * 0.5f
+                    );
 
-				if (setting->type == SettingType::KEYBIND) {
-					auto* ks = static_cast<KeybindSetting*>(setting);
-					int& key = *ks->value;
+                    if (value) {
+                        D2D::drawGlowingCircle(circleCenter, circleRadius, accentColor1, 3.f, 2.f);
+                        D2D::drawCircle(circleCenter, accentColor1, circleRadius, 1.0f);
+                    }
+                    else {
+                        D2D::fillGlowingCircle(circleCenter, circleRadius, accentColor1, 3.f);
+                    }
+                }
+                if (setting->type == SettingType::KEYBIND) {
+                    auto* ks = static_cast<KeybindSetting*>(setting);
+                    int& key = *ks->value;
 
-					if (sRect.contains(mousePos) && isLeftClickDown) {
-						capturingKbSettingPtr =
-							(capturingKbSettingPtr == ks ? nullptr : ks);
-						isLeftClickDown = false;
-					}
+                    if (sRect.contains(mousePos) && isLeftClickDown) {
+                        capturingKbSettingPtr = (capturingKbSettingPtr == ks ? nullptr : ks);
+                        isLeftClickDown = false;
+                    }
 
-					std::string keyName =
-						capturingKbSettingPtr == ks ? "..." :
-						key != 0 ? KeyNames[key] : "None";
+                    std::string keyName = capturingKbSettingPtr == ks ? "..." : key != 0 ? KeyNames[key] : "None";
+                    Vector2 keyText(sRect.z - textPaddingX - D2D::getTextWidth(keyName, textSize), sText.y);
 
-					Vector2 keyText(
-						sRect.z - textPaddingX - D2D::getTextWidth(keyName, textSize),
-						sText.y
-					);
+                    D2D::drawText(sText, setting->name + ":", Color(175.f, 175.f, 175.f), textSize);
+                    D2D::drawText(keyText, keyName, Color(255.f, 255.f, 255.f), textSize);
+                }
 
-					D2D::drawText(sText, setting->name + ":", Color(175, 175, 175), textSize);
-					D2D::drawText(keyText, keyName, Color(255, 255, 255), textSize);
-				}
-
-				yOffset += textHeight + 1.5f;
-			}
-		}
-	}
+                yOffset += textHeight;
+            }
+        }
+    }
 }

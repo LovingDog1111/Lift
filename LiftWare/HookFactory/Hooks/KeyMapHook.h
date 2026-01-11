@@ -11,13 +11,15 @@ private:
 
 	static __int64 KeyInputCallback(uint64_t key, bool isDown) {
 
-		if (FeatureFactory::getFeature<ClickGUI>()->isEnabled()) {
+		static ClickGUI* clickGuiMod = FeatureFactory::getFeature<ClickGUI>();
+		if (clickGuiMod && clickGuiMod->initialized && clickGuiMod->isEnabled()) {
+			clickGuiMod->onKeyUpdate((int)key, isDown);
+			return 0;
+		}
+
+		if (Game::canUseMoveKeys())
 			FeatureFactory::onKeyUpdate((int)key, isDown);
-		}
-		else {
-			if (Game::canUseMoveKeys())
-				FeatureFactory::onKeyUpdate((int)key, isDown);
-		}
+
 		return oFunc(key, isDown);
 	}
 public:

@@ -1,4 +1,4 @@
-#include "Colors.h"
+﻿#include "Colors.h"
 #include <math.h>
 #include "../Time/Time.h"
 
@@ -115,14 +115,15 @@ Color Colors::getRainbowColor(float seconds, float saturation, float brightness,
 
 Color Colors::getWaveColor(const Color& startColor, const Color& endColor, long index) {
 	unsigned __int64 currentMs = Time::getCurrentMs();
-	double offset = ((currentMs - index) / 8) / (double)120;
-	double aids123 = ((currentMs - index) % 1000 / 1000.000);
-	int aids1234 = (int)(((currentMs - index) % 2000 / 2000.000) * 2);
-	aids123 = aids1234 % 2 == 0 ? aids123 : 1 - aids123;
-	double inverse_percent = 1 - aids123;
-	int redPart = (int)(startColor.r * inverse_percent + endColor.r * aids123);
-	int greenPart = (int)(startColor.g * inverse_percent + endColor.g * aids123);
-	int bluePart = (int)(startColor.b * inverse_percent + endColor.b * aids123);
-	int alphaPart = (int)(startColor.a * inverse_percent + endColor.a * aids123);
+	double cycleDuration = 2000.0; 
+	double t = fmod(currentMs + index, cycleDuration) / (cycleDuration / 2.0);
+
+	if (t > 1.0) t = 2.0 - t;
+
+	int redPart = (int)(startColor.r * (1.0 - t) + endColor.r * t);
+	int greenPart = (int)(startColor.g * (1.0 - t) + endColor.g * t);
+	int bluePart = (int)(startColor.b * (1.0 - t) + endColor.b * t);
+	int alphaPart = (int)(startColor.a * (1.0 - t) + endColor.a * t);
+
 	return Color(redPart, greenPart, bluePart, alphaPart);
 }

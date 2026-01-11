@@ -12,8 +12,12 @@ private:
 	static void mouseInputCallback(__int64 a1, char mouseButton, char isDown, __int16 mouseX, __int16 mouseY, __int16 relativeMovementX, __int16 relativeMovementY, char a8) {
 
 		Game::keyMousePtr = (void*)(a1 + 0x10);
-		FeatureFactory::onMouseUpdate(Vector2<float>(mouseX, mouseY), mouseButton, isDown);
 
+		static ClickGUI* clickGuiMod = FeatureFactory::getFeature<ClickGUI>();
+		if (clickGuiMod && clickGuiMod->initialized && clickGuiMod->isEnabled()) {
+			clickGuiMod->onMouseUpdate(Vector2<float>((float)mouseX, (float)mouseY), mouseButton, isDown);
+			return;
+		}
 		oFunc(a1, mouseButton, isDown, mouseX, mouseY, relativeMovementX, relativeMovementY, a8);
 	}
 public:
