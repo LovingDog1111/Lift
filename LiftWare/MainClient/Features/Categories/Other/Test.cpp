@@ -21,5 +21,5 @@ void Test::onNormalTick(LocalPlayer* localPlayer) {
 }
 
 void Test::onD2DRender() {
-	D2D::drawText(Vector2<float>(0.f, 0.f), "MEOW MEOW MEOW TEST", Color(255, 0, 0), 2.0f);
+	D2D::drawText(Vector2<float>(0.f, 0.f), "Test text", Color(255, 0, 0), 2.0f);
 }

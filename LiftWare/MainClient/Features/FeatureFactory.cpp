@@ -3,6 +3,7 @@
 
 void FeatureFactory::init() {
 	moduleList.push_back(new Test());
+	moduleList.push_back(new ArrayList());
 
 	std::sort(moduleList.begin(), moduleList.end(), [](Feature* lhs, Feature* rhs) {
 		return lhs->getModuleName() < rhs->getModuleName();

@@ -1,6 +1,7 @@
 #pragma once
 #include "FeatureBase/FeatureBase.h"
 #include "Categories/Other/Test.h"
+#include "Categories/Visual/ArrayList.h"
 
 class FeatureFactory {
 public:

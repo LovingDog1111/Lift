@@ -13,7 +13,7 @@ private:
 		if (localPlayer == _this) {
 			FeatureFactory::onNormalTick(localPlayer);
 			if (!hasAnnounced) {
-				Lift::displayMessage("Here are the available modules: Test. The commands you can use are Bind and SetPos. Type .bind (module) (key) to assign a key.");
+				Lift::displayMessage("Here are the available modules: Test and Arraylist. The commands you can use are Bind and SetPos. Type .bind (module) (key) to assign a key.");
 				hasAnnounced = true;
 			}
 		}

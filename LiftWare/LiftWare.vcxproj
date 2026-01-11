@@ -113,6 +113,7 @@
     <ClCompile Include="MainClient\Commands\Commands\CommandBase.cpp" />
     <ClCompile Include="MainClient\Commands\Commands\SetPositionCommand.cpp" />
     <ClCompile Include="MainClient\Features\Categories\Other\Test.cpp" />
+    <ClCompile Include="MainClient\Features\Categories\Visual\ArrayList.cpp" />
     <ClCompile Include="MainClient\Features\FeatureBase\FeatureBase.cpp" />
     <ClCompile Include="MainClient\Features\FeatureFactory.cpp" />
     <ClCompile Include="MainClient\Lift.cpp" />
@@ -545,6 +546,7 @@
     <ClInclude Include="MainClient\Commands\Commands\CommandBase.h" />
     <ClInclude Include="MainClient\Commands\Commands\SetPositionCommand.h" />
     <ClInclude Include="MainClient\Features\Categories\Other\Test.h" />
+    <ClInclude Include="MainClient\Features\Categories\Visual\ArrayList.h" />
     <ClInclude Include="MainClient\Features\FeatureBase\FeatureBase.h" />
     <ClInclude Include="MainClient\Features\FeatureBase\Settings\BoolSetting.h" />
     <ClInclude Include="MainClient\Features\FeatureBase\Settings\KeybindSetting.h" />

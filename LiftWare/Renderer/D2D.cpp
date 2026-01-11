@@ -25,8 +25,8 @@ static std::unordered_map<uint32_t, winrt::com_ptr<ID2D1SolidColorBrush>> colorB
 
 static std::unordered_map<uint64_t, winrt::com_ptr<IDWriteTextLayout>> textLayoutTemporary;
 
-static int currentD2DFontSize = 25;
-static std::string currentD2DFont = "Arial";
+static int currentD2DFontSize = 20;
+static std::string currentD2DFont = "Verdana";
 static bool isFontItalic = false;
 
 static bool initD2D = false;
@@ -114,68 +114,6 @@ void D2D::EndFrame() {
 
 void D2D::Render() {
 	FeatureFactory::onD2DRender();
-
-	{
-		Vector2<float> windowSize = D2D::getWindowSize();
-		static float holdTime = 0.f;
-		static float holdAnim = 0.f;
-		static float showDuration = 0.f;
-		static float exitDuration = 0.f;
-		static float exitVelocity = 0.f;
-
-		if (showDuration > 0.1f) {
-			static std::string text = "Hold Ctrl and L to eject";
-			float textSize = 1.f * showDuration;
-			float textPaddingX = 4.f * textSize;
-			float textPaddingY = 1.f * textSize;
-			float textWidth = getTextWidth(text, textSize);
-			float textHeight = getTextHeight(text, textSize);
-
-			Vector2<float> textPos = Vector2<float>((windowSize.x - textWidth) / 2.f, -30.f + (100.f * showDuration));
-			Vector4<float> rectPos = Vector4<float>(textPos.x - textPaddingX, textPos.y - textPaddingY, textPos.x + textWidth + textPaddingX, textPos.y + textHeight + textPaddingY);
-			Vector4<float> underlineRect = Vector4<float>(rectPos.x, rectPos.w, rectPos.z, rectPos.w + 2.f * textSize);
-			Vector4<float> underlineAnim = Vector4<float>(underlineRect.x, underlineRect.y, underlineRect.x + (underlineRect.z - underlineRect.x) * holdAnim, underlineRect.w);
-
-			fillRectangle(rectPos, Color(0, 0, 0, 125));
-			fillRectangle(underlineRect, Color(0, 0, 0, 165));
-			fillRectangle(underlineAnim, Color(255, 255, 255));
-			drawText(textPos, text, Color(255, 255, 255), textSize);
-		}
-
-		if (Game::isKeyDown(VK_CONTROL) && Game::isKeyDown('L')) {
-			holdTime += D2D::deltaTime / 2.f;
-			if (holdTime > 1.f)
-				holdTime = 1.f;
-			exitDuration = 1.5f;
-		}
-		else {
-			holdTime = 0.f;
-			exitDuration -= D2D::deltaTime;
-		}
-
-		holdAnim += (holdTime - holdAnim) * (D2D::deltaTime * 10.f);
-		if (holdAnim > 1.f)
-			holdAnim = 1.f;
-		if (holdAnim < 0.f)
-			holdAnim = 0.f;
-
-		if (exitDuration > 0.f) {
-			showDuration += (1.f - showDuration) * (D2D::deltaTime * 8.f);
-			exitVelocity = 0.f;
-		}
-		else {
-			showDuration -= exitVelocity;
-			exitVelocity += D2D::deltaTime / 4.f;
-		}
-
-		if (showDuration < 0.f)
-			showDuration = 0.f;
-		if (showDuration > 1.f)
-			showDuration = 1.f;
-
-		if (holdAnim > 0.99f)
-			Lift::shutdown();
-	}
 }
 
 void D2D::Clean() {
@@ -211,7 +149,7 @@ void D2D::drawText(const Vector2<float>& textPos, const std::string& textStr, co
 	IDWriteTextLayout* textLayout = getTextLayout(textStr, textSize, storeTextLayout);
 
 	ID2D1SolidColorBrush* shadowColorBrush = getSolidColorBrush(Color(0, 0, 0, color.a));
-	d2dDeviceContext->DrawTextLayout(D2D1::Point2F(textPos.x + 1.f, textPos.y + 1.f), textLayout, shadowColorBrush);
+	d2dDeviceContext->DrawTextLayout(D2D1::Point2F(textPos.x + 2.f, textPos.y + 2.f), textLayout, shadowColorBrush);
 
 	ID2D1SolidColorBrush* colorBrush = getSolidColorBrush(color);
 	d2dDeviceContext->DrawTextLayout(D2D1::Point2F(textPos.x, textPos.y), textLayout, colorBrush);
