@@ -6,5 +6,5 @@ public:
     Fly();
     void onNormalTick(LocalPlayer* localPlayer) override;
 private:
-    float flySpeed;
+    float flySpeed = 1.0f;
 };

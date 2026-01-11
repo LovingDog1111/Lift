@@ -42,8 +42,7 @@ namespace D2D {
 	void addBlur(const Vector4<float>& rect, float strength, bool flush = true);
 	void fillTriangle(const Vector2<float>& p1, const Vector2<float>& p2, const Vector2<float>& p3, const Color& color);
 	void drawTriangle(const Vector2<float>& p1, const Vector2<float>& p2, const Vector2<float>& p3, const Color& color, float width = 1.0f);
-	void fillRoundedRect(const Vector4<float>& rect, const Color& color, float radius);
-	void drawRoundedRect(const Vector4<float>& rect, const Color& color, float radius, float width = 1.0f);
+	void fillBottomLeftRoundedRect(const Vector4<float>& rect, const Color& color, float radius);
 	void fillGradientRectangleVertical(const Vector4<float>& rect, const Color& startColor, const Color& endColor, float rounding, CornerRoundType roundType);
 	void fillGradientRectangle(const Vector4<float>& rect, const Color& startColor, const Color& endColor, float rounding, CornerRoundType roundType);
 	void beginClip(const Vector4<float>& clipRect);

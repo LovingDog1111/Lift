@@ -5,4 +5,7 @@ class ArrayList : public Feature {
 public:
     ArrayList();
     void onD2DRender() override;
+private:
+    float size = 1.0f;
+    float rounding = 6.0f;
 };

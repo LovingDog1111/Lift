@@ -1,9 +1,8 @@
 #include "Fly.h"
 #include <cmath>
 
-Fly::Fly()
-    : Feature("Fly", "Allows the player to fly freely.", Category::MOVEMENT), flySpeed(0.5f)
-{
+Fly::Fly() : Feature("Fly", "Allows the player to fly freely.", Category::MOVEMENT) {
+    registerSetting(new SliderSetting<float>("Speed", "Speed of the flight.", &flySpeed, flySpeed, 0.f, 2.f));
 }
 
 void Fly::onNormalTick(LocalPlayer* localPlayer) {
@@ -30,8 +29,8 @@ void Fly::onNormalTick(LocalPlayer* localPlayer) {
         if (isForward)  moveY += 1;
         if (isBackward) moveY -= 1;
 
-        if (isUp)   velocity.y += 1.0f;
-        if (isDown) velocity.y -= 1.0f;
+        if (isUp)   velocity.y += flySpeed;
+        if (isDown) velocity.y -= flySpeed;
 
         if (moveX != 0 || moveY != 0) {
             float angleRad = std::atan2((float)moveX, (float)moveY);
@@ -39,8 +38,8 @@ void Fly::onNormalTick(LocalPlayer* localPlayer) {
             float finalYaw = yaw + angleDeg;
             float calcYaw = (finalYaw + 90.f) * (PI / 180.f);
 
-            velocity.x = std::cos(calcYaw) * 1.0f;
-            velocity.z = std::sin(calcYaw) * 1.0f;
+            velocity.x = std::cos(calcYaw) * flySpeed;
+            velocity.z = std::sin(calcYaw) * flySpeed;
         }
     }
 }

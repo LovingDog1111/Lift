@@ -660,44 +660,41 @@ ID2D1SolidColorBrush* getSolidColorBrush(const Color& color) {
 	return colorBrushCache[colorBrushKey].get();
 }
 
-void D2D::fillRoundedRect(const Vector4<float>& rect, const Color& color, float radius) {
+void D2D::fillBottomLeftRoundedRect(const Vector4<float>& rect, const Color& color, float radius) {
 	if (!d2dDeviceContext || !d2dFactory) return;
 
-	ID2D1SolidColorBrush* colorBrush = getSolidColorBrush(color);
-	if (!colorBrush) return;
+	ID2D1SolidColorBrush* brush = getSolidColorBrush(color);
+	if (!brush) return;
 
-	ID2D1RoundedRectangleGeometry* roundedRectGeometry = nullptr;
-	D2D1_ROUNDED_RECT roundedRect = D2D1::RoundedRect(
-		D2D1::RectF(rect.x, rect.y, rect.z, rect.w),
-		radius,
-		radius
-	);
+	ID2D1PathGeometry* path = nullptr;
+	if (FAILED(d2dFactory->CreatePathGeometry(&path)) || !path) return;
 
-	HRESULT hr = d2dFactory->CreateRoundedRectangleGeometry(roundedRect, &roundedRectGeometry);
-	if (FAILED(hr) || !roundedRectGeometry) return;
+	ID2D1GeometrySink* sink = nullptr;
+	if (FAILED(path->Open(&sink)) || !sink) {
+		path->Release();
+		return;
+	}
 
-	d2dDeviceContext->FillGeometry(roundedRectGeometry, colorBrush);
-	roundedRectGeometry->Release();
-}
+	sink->BeginFigure(D2D1::Point2F(rect.x, rect.y), D2D1_FIGURE_BEGIN_FILLED);
 
-void D2D::drawRoundedRect(const Vector4<float>& rect, const Color& color, float radius, float width) {
-	if (!d2dDeviceContext || !d2dFactory) return;
+	sink->AddLine(D2D1::Point2F(rect.z, rect.y));
+	sink->AddLine(D2D1::Point2F(rect.z, rect.w));
+	sink->AddLine(D2D1::Point2F(rect.x + radius, rect.w));
+	sink->AddArc(D2D1::ArcSegment(
+		D2D1::Point2F(rect.x, rect.w - radius),
+		D2D1::SizeF(radius, radius),
+		0.f,
+		D2D1_SWEEP_DIRECTION_CLOCKWISE,
+		D2D1_ARC_SIZE_SMALL
+	));
+	sink->AddLine(D2D1::Point2F(rect.x, rect.y));
 
-	ID2D1SolidColorBrush* colorBrush = getSolidColorBrush(color);
-	if (!colorBrush) return;
+	sink->EndFigure(D2D1_FIGURE_END_CLOSED);
+	sink->Close();
+	sink->Release();
 
-	ID2D1RoundedRectangleGeometry* roundedRectGeometry = nullptr;
-	D2D1_ROUNDED_RECT roundedRect = D2D1::RoundedRect(
-		D2D1::RectF(rect.x, rect.y, rect.z, rect.w),
-		radius,
-		radius
-	);
-
-	HRESULT hr = d2dFactory->CreateRoundedRectangleGeometry(roundedRect, &roundedRectGeometry);
-	if (FAILED(hr) || !roundedRectGeometry) return;
-
-	d2dDeviceContext->DrawGeometry(roundedRectGeometry, colorBrush, width);
-	roundedRectGeometry->Release();
+	d2dDeviceContext->FillGeometry(path, brush);
+	path->Release();
 }
 
 void D2D::beginClip(const Vector4<float>& clipRect) {

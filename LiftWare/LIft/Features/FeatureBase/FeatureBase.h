@@ -5,8 +5,9 @@
 #include "../../../SDK/Game.h"
 
 #include "Settings/Setting.h"
-#include "Settings/BoolSetting.h"
-#include "Settings/KeybindSetting.h"
+#include "Settings/Bool.h"
+#include "Settings/Keybind.h"
+#include "Settings/Slider.h"
 
 #include "../../Renderer/D2D.h"
 

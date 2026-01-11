@@ -165,6 +165,7 @@ void ClickGUI::onD2DRender() {
     float textSize = 0.6f;
     float textPaddingX = 5.f * textSize;
     float textHeight = D2D::getTextHeight("X", textSize * 1.65f);
+    float sliderExtraHeight = textHeight * 0.35f;
 
     float headerTextSize = 0.75f;
     float headerTextHeight = D2D::getTextHeight("X", textSize * 1.75f);
@@ -305,19 +306,24 @@ void ClickGUI::onD2DRender() {
             auto& settings = mod->getSettingList();
             for (size_t j = 0; j < settings.size(); j++) {
                 auto& setting = settings[j];
-                if (setting->type != SettingType::BOOL && setting->type != SettingType::KEYBIND)
+                if (setting->type != SettingType::BOOL && setting->type != SettingType::KEYBIND && setting->type != SettingType::SLIDER)
                     continue;
+
+                float settingHeight = textHeight;
+                if (setting->type == SettingType::SLIDER) {
+                    settingHeight = textHeight + sliderExtraHeight;
+                }
 
                 Vector4 sRect(
                     hRect.x,
                     yOffset,
                     hRect.z,
-                    yOffset + textHeight * mod->animProgress
+                    yOffset + settingHeight * mod->animProgress
                 );
 
-                float settingAnimHeight = textHeight * mod->animProgress;
+                float settingAnimHeight = settingHeight * mod->animProgress;
                 if (settingAnimHeight <= 0.f) {
-                    yOffset += textHeight * mod->animProgress;
+                    yOffset += settingHeight * mod->animProgress;
                     continue;
                 }
 
@@ -326,18 +332,19 @@ void ClickGUI::onD2DRender() {
 
                 Vector2 sText(
                     sRect.x + textPaddingX,
-                    sRect.y + (settingAnimHeight - D2D::getTextHeight("X", textSize)) * 0.5f
+                    sRect.y + (textHeight - D2D::getTextHeight("X", textSize)) * 0.5f
                 );
 
                 if (sRect.contains(mousePos))
                     descriptionText = setting->description;
 
                 bool isLastSetting = (j == settings.size() - 1);
+                float settingRounding = isLastSetting ? rounding : 0.f;
 
                 D2D::fillRectangle(
-                    Vector4<float>(sRect.x, sRect.y, sRect.z, sRect.y + textHeight),
+                    Vector4<float>(sRect.x, sRect.y, sRect.z, sRect.y + settingHeight),
                     Gray,
-                    isLastSetting ? rounding : 0.f,
+                    settingRounding,
                     isLastSetting ? D2D::CornerRoundType::BottomOnly : D2D::CornerRoundType::None
                 );
 
@@ -399,9 +406,103 @@ void ClickGUI::onD2DRender() {
                     D2D::drawText(keyText, keyName, Color(255.f, 255.f, 255.f), textSize);
                 }
 
+                if (setting->type == SettingType::SLIDER) {
+                    auto* ss = static_cast<SliderSettingBase*>(setting);
+
+                    static std::unordered_map<SliderSettingBase*, float> anim;
+                    static std::unordered_map<SliderSettingBase*, bool> draggingMap;
+                    if (!anim.count(ss)) {
+                        if (ss->valueType == ValueType::INT) {
+                            auto* s = static_cast<SliderSetting<int>*>(ss);
+                            anim[ss] = float(*s->valuePtr - s->minValue) / float(s->maxValue - s->minValue);
+                        }
+                        else {
+                            auto* s = static_cast<SliderSetting<float>*>(ss);
+                            anim[ss] = (*s->valuePtr - s->minValue) / (s->maxValue - s->minValue);
+                        }
+                        draggingMap[ss] = false;
+                    }
+
+                    float& currentAnim = anim[ss];
+                    bool& dragging = draggingMap[ss];
+
+                    float sliderWidth = sRect.z - sRect.x - textPaddingX * 2.f;
+                    float sliderX = sRect.x + textPaddingX;
+                    float sliderY = sRect.y + textHeight + sliderExtraHeight * 0.15f;
+                    float sliderH = textHeight * 0.14f;
+
+                    D2D::drawText(sText, setting->name + ":", Color(175, 175, 175), textSize);
+
+                    bool over =
+                        mousePos.x >= sliderX && mousePos.x <= sliderX + sliderWidth &&
+                        mousePos.y >= sliderY - sliderH * 2.f &&
+                        mousePos.y <= sliderY + sliderH * 2.f;
+
+                    float targetNormalized = 0.f;
+
+                    if (ss->valueType == ValueType::INT) {
+                        auto* s = static_cast<SliderSetting<int>*>(ss);
+                        int& v = *s->valuePtr;
+
+                        if (over && isHoldingLeftClick) {
+                            dragging = true;
+                            float n = (std::clamp(mousePos.x, sliderX, sliderX + sliderWidth) - sliderX) / sliderWidth;
+                            v = s->minValue + int(n * (s->maxValue - s->minValue));
+                        }
+
+                        if (!isHoldingLeftClick)
+                            dragging = false;
+
+                        targetNormalized = float(v - s->minValue) / float(s->maxValue - s->minValue);
+                    }
+                    else {
+                        auto* s = static_cast<SliderSetting<float>*>(ss);
+                        float& v = *s->valuePtr;
+
+                        if (over && isHoldingLeftClick) {
+                            dragging = true;
+                            float n = (std::clamp(mousePos.x, sliderX, sliderX + sliderWidth) - sliderX) / sliderWidth;
+                            v = s->minValue + n * (s->maxValue - s->minValue);
+                        }
+
+                        if (!isHoldingLeftClick)
+                            dragging = false;
+
+                        targetNormalized = (v - s->minValue) / (s->maxValue - s->minValue);
+                    }
+
+                    float smoothing = 1.f - std::pow(0.001f, D2D::deltaTime * 2.f);
+                    currentAnim += (targetNormalized - currentAnim) * smoothing;
+
+                    Vector4 bg(sliderX, sliderY - sliderH * 0.5f, sliderX + sliderWidth, sliderY + sliderH * 0.5f);
+                    Vector4 fill(sliderX, sliderY - sliderH * 0.5f, sliderX + sliderWidth * currentAnim, sliderY + sliderH * 0.5f);
+                    D2D::fillRectangle(bg, Gray, 2.f);
+                    D2D::fillRectangle(fill, accentColor1, 2.f);
+
+                    float knobX = sliderX + sliderWidth * currentAnim;
+                    D2D::fillCircle(Vector2(knobX, sliderY), accentColor1, sliderH * 0.9f);
+
+                    std::string valueText;
+                    if (ss->valueType == ValueType::INT) {
+                        auto* iSlider = static_cast<SliderSetting<int>*>(ss);
+                        valueText = std::to_string(*iSlider->valuePtr) + ".0";
+                    }
+                    else {
+                        auto* fSlider = static_cast<SliderSetting<float>*>(ss);
+                        std::stringstream stream;
+                        stream << std::fixed << std::setprecision(1) << *fSlider->valuePtr;
+                        valueText = stream.str();
+                    }
+
+                    float valueTextWidth = D2D::getTextWidth(valueText, textSize);
+                    Vector2 valueTextPos(sRect.z - textPaddingX - valueTextWidth, sText.y);
+                    D2D::drawText(valueTextPos, valueText, Color(255, 255, 255), textSize);
+                }
+
                 D2D::endClip();
 
-                yOffset += textHeight * mod->animProgress;
+                float settingAnimHeight2 = settingHeight * mod->animProgress;
+                yOffset += settingAnimHeight2;
             }
         }
     }

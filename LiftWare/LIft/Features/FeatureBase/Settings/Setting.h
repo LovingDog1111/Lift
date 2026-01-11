@@ -4,6 +4,7 @@
 enum class SettingType {
 	BOOL,
 	KEYBIND,
+	SLIDER,
 	UNKNOWN
 };
 

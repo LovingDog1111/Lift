@@ -544,6 +544,7 @@
     <ClInclude Include="Libs\libhat\libhat\Traits.hpp" />
     <ClInclude Include="Libs\minhook\MinHook.h" />
     <ClInclude Include="Libs\xorstr.hpp" />
+    <ClInclude Include="LIft\Features\FeatureBase\Settings\Slider.h" />
     <ClInclude Include="Logs\Logger.h" />
     <ClInclude Include="LIft\Commands\CommandFactory.h" />
     <ClInclude Include="LIft\Commands\Commands\BindCommand.h" />
@@ -555,8 +556,8 @@
     <ClInclude Include="LIft\Features\Categories\Visual\ArrayList.h" />
     <ClInclude Include="LIft\Features\Categories\Visual\ClickGUI.h" />
     <ClInclude Include="LIft\Features\FeatureBase\FeatureBase.h" />
-    <ClInclude Include="LIft\Features\FeatureBase\Settings\BoolSetting.h" />
-    <ClInclude Include="LIft\Features\FeatureBase\Settings\KeybindSetting.h" />
+    <ClInclude Include="LIft\Features\FeatureBase\Settings\Bool.h" />
+    <ClInclude Include="LIft\Features\FeatureBase\Settings\Keybind.h" />
     <ClInclude Include="LIft\Features\FeatureBase\Settings\Setting.h" />
     <ClInclude Include="LIft\Features\FeatureFactory.h" />
     <ClInclude Include="LIft\Lift.h" />
