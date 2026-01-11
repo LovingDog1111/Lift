@@ -1,8 +1,8 @@
 #include "KillAura.h"
 
-KillAura::KillAura()
-    : Feature("Killaura", "Automatically attacks nearby players.", Category::COMBAT)
-{
+KillAura::KillAura() : Feature("Killaura", "Automatically attacks nearby players.", Category::COMBAT) {
+    std::vector<std::string> rots = { "Fast", "Slow" };
+    registerSetting(new EnumSetting("Rotations", "Select your rotation mode", rots, &rotations, 0));
 }
 
 std::vector<Actor*> KillAura::getTargets(Actor* localPlayer, float range) {
@@ -33,7 +33,10 @@ void KillAura::onUpdateRotation(LocalPlayer* localPlayer) {
         float distB = std::sqrt(db.x * db.x + db.y * db.y + db.z * db.z);
         return distA < distB;
         });
-    Vector2<float> angles = localPlayer->getPosition().CalcAngle(closest->getPosition());
+    if (rotations == 0) {
+        angles = localPlayer->getPosition().CalcAngle(closest->getPosition());
+    }
+
     auto* rot = localPlayer->getComponent<ActorRotationComponent>();
     if (rot) {
         rot->presentRot.y = angles.y;
@@ -53,6 +56,9 @@ void KillAura::onNormalTick(LocalPlayer* localPlayer) {
         if (target) {
             localPlayer->swing();
             localPlayer->gameMode->attack(target);
+            if (rotations == 1) {
+                angles = localPlayer->getPosition().CalcAngle(target->getPosition());
+            }
         }
     }
 }

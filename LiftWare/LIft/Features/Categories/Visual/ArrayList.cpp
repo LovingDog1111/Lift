@@ -13,8 +13,8 @@ void ArrayList::onD2DRender() {
     float xMargin = 15.f;
     float yOffset = 15.f;
 
-    Color accentColor1 = Colors::getWaveColor(Color(255.f, 30.f, 0.f), Color(255.f, 190.f, 0.f), 0);
-    Color accentColor2 = Colors::getWaveColor(Color(255.f, 30.f, 0.f), Color(255.f, 190.f, 0.f), 500);
+    Color accentColor1 = Colors::getWaveColor(FeatureFactory::getFeature<Theme>()->color1, FeatureFactory::getFeature<Theme>()->color2, 0);
+    Color accentColor2 = Colors::getWaveColor(FeatureFactory::getFeature<Theme>()->color1, FeatureFactory::getFeature<Theme>()->color2, 500);
 
     std::vector<Feature*> modules;
     for (Feature* mod : FeatureFactory::moduleList) {
@@ -22,8 +22,10 @@ void ArrayList::onD2DRender() {
             modules.push_back(mod);
     }
 
-    std::sort(modules.begin(), modules.end(), [](Feature* a, Feature* b) {
-        return a->getModuleName().length() > b->getModuleName().length();
+    std::sort(modules.begin(), modules.end(), [&](Feature* a, Feature* b) {
+        float widthA = D2D::getTextWidth(a->getModuleName(), size) * 0.6f;
+        float widthB = D2D::getTextWidth(b->getModuleName(), size) * 0.6f;
+        return widthA > widthB;
         });
 
     float currentY = yOffset;
@@ -32,14 +34,15 @@ void ArrayList::onD2DRender() {
     for (size_t i = 0; i < modules.size(); i++) {
         Feature* mod = modules[i];
         std::string moduleName = mod->getModuleName();
-        float textWidth = D2D::getTextWidth(moduleName, size) * 0.8f;
-        float textHeight = D2D::getTextHeight(moduleName, size) * 0.8f;
 
-        float rectWidth = textWidth + 6.f;
+        float textWidth = D2D::getTextWidth(moduleName, size);
+        float textHeight = D2D::getTextHeight(moduleName, size);
+
+        float rectWidth = textWidth * 0.6f + 6.f;
         float rectLeft = windowSize.x - xMargin - rectWidth;
         float rectRight = windowSize.x - xMargin;
         float rectTop = currentY;
-        float rectBottom = rectTop + textHeight;
+        float rectBottom = rectTop + (textHeight * 0.6f) - (0.02f * size);
 
         if (rectRight > maxRight)
             maxRight = rectRight;
@@ -52,32 +55,30 @@ void ArrayList::onD2DRender() {
         else if (i == modules.size() - 1)
             roundType = D2D::CornerRoundType::BottomOnly;
 
-        if (roundType != D2D::CornerRoundType::BottomOnly) {
-            D2D::fillRectangle(bgRect, Color(0, 0, 0, 125), 6.f, roundType);
-        }
-        else {
-            D2D::fillBottomLeftRoundedRect(bgRect, Color(0, 0, 0, 125), 6.f);
-        }
+        if (roundType != D2D::CornerRoundType::BottomOnly)
+            D2D::fillRectangle(bgRect, Color(0, 0, 0, 125), rounding, roundType);
+        else
+            D2D::fillBottomLeftRoundedRect(bgRect, Color(0, 0, 0, 125), rounding);
 
-        float textX = rectLeft + (rectWidth - textWidth) / 2.f;
+        float textX = rectLeft + (rectWidth - textWidth * 0.6f) / 2.f;
         float textY = rectTop;
         float letterX = textX;
 
         for (size_t c = 0; c < moduleName.size(); c++) {
             std::string letter = moduleName.substr(c, 1);
-            float letterWidth = D2D::getTextWidth(letter, size) * 0.8f;
+            float letterWidth = D2D::getTextWidth(letter, size) * 0.6f;
 
-            float t = (letterX - textX + letterWidth * 0.5f) / textWidth;
+            float t = (letterX - textX + letterWidth * 0.5f) / (textWidth * 0.6f);
             int r = (int)(accentColor1.r * (1 - t) + accentColor2.r * t);
             int g = (int)(accentColor1.g * (1 - t) + accentColor2.g * t);
             int b = (int)(accentColor1.b * (1 - t) + accentColor2.b * t);
             int a = (int)(accentColor1.a * (1 - t) + accentColor2.a * t);
 
-            D2D::drawText(Vector2<float>(letterX, textY), letter, Color(r, g, b, a), size * 0.8f);
+            D2D::drawText(Vector2<float>(letterX, textY), letter, Color(r, g, b, a), size * 0.6f);
             letterX += letterWidth;
         }
 
-        currentY = rectBottom;
+        currentY += (textHeight * 0.6f) - (0.02f * size);
     }
 
     if (!modules.empty()) {

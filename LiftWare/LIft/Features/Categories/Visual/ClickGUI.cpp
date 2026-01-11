@@ -2,7 +2,7 @@
 #include "../../FeatureFactory.h"
 
 ClickGUI::ClickGUI() : Feature("ClickGUI", "A module to display features.", Category::VISUAL, VK_INSERT) {
-
+    registerSetting(new SliderSetting<float>("Rounding", "Rounding of the rectangles.", &rounding, rounding, 0.f, 15.f));
 }
 
 ClickGUI::Header::Header(std::string windowName, Vector2<float> startPos, Category c) {
@@ -32,8 +32,20 @@ void ClickGUI::onDisable() {
     draggingWindowPtr = nullptr;
     capturingKbSettingPtr = nullptr;
     for (Feature* mod : FeatureFactory::moduleList) {
+        if (mod == this) continue;
         mod->animProgress = 0.0f;
+        mod->extended = false;
+        if (mod->isEnabled()) {
+            mod->enableAnimProgress = 1.0f;
+            mod->disableAnimProgress = 0.0f;
+        }
+        else {
+            mod->enableAnimProgress = 0.0f;
+            mod->disableAnimProgress = 1.0f;
+        }
     }
+    this->enableAnimProgress = 1.0f;
+    this->disableAnimProgress = 0.0f;
 }
 
 void ClickGUI::onEnable() {
@@ -151,8 +163,8 @@ void ClickGUI::onD2DRender() {
     mouseDelta = mousePos - oldMousePos;
     oldMousePos = mousePos;
     std::string descriptionText = "NULL";
-    Color accentColor1 = Colors::getWaveColor(Color(255.f, 30.f, 0.f), Color(255.f, 190.f, 0.f), 0);
-    Color accentColor2 = Colors::getWaveColor(Color(255.f, 30.f, 0.f), Color(255.f, 190.f, 0.f), 500);
+    Color accentColor1 = Colors::getWaveColor(FeatureFactory::getFeature<Theme>()->color1, FeatureFactory::getFeature<Theme>()->color2, 0);
+    Color accentColor2 = Colors::getWaveColor(FeatureFactory::getFeature<Theme>()->color1, FeatureFactory::getFeature<Theme>()->color2, 500);
 
     Vector2<float> screenSize = Game::clientInstance->guiData->windowSizeReal;
     D2D::fillRectangle(Vector4<float>(0.f, 0.f, screenSize.x, screenSize.y), Color(0, 0, 0, 125));
@@ -165,15 +177,13 @@ void ClickGUI::onD2DRender() {
     float textSize = 0.6f;
     float textPaddingX = 5.f * textSize;
     float textHeight = D2D::getTextHeight("X", textSize * 1.65f);
-    float sliderExtraHeight = textHeight * 0.35f;
+    float sliderExtraHeight = 5.f;
 
     float headerTextSize = 0.75f;
     float headerTextHeight = D2D::getTextHeight("X", textSize * 1.75f);
-
-    float rounding = 6.f;
     float animSpeed = 20.f;
 
-    Color Gray = Color(35.f, 35.f, 35.f);
+    Color Gray = Color(25.f, 25.f, 25.f);
     Color SolsticeBlack = Color(0.f, 0.f, 0.f);
 
     for (auto& window : windowList) {
@@ -209,7 +219,7 @@ void ClickGUI::onD2DRender() {
         if (window->animProgress < 0.f) window->animProgress = 0.f;
 
         D2D::fillRectangle(hRect, SolsticeBlack, rounding, D2D::CornerRoundType::TopOnly);
-        D2D::drawText(hText, window->name, Color(255.f, 255.f, 255.f), headerTextSize, true, true);
+        D2D::drawText(hText, window->name, Color(255.f, 255.f, 255.f), headerTextSize, true, false);
 
         Vector4<float> underlineRect(hRect.x, hRect.w - 2.0f, hRect.z, hRect.w);
         D2D::fillGradientRectangle(underlineRect, accentColor1, accentColor2, 1.0f, D2D::CornerRoundType::None);
@@ -306,12 +316,19 @@ void ClickGUI::onD2DRender() {
             auto& settings = mod->getSettingList();
             for (size_t j = 0; j < settings.size(); j++) {
                 auto& setting = settings[j];
-                if (setting->type != SettingType::BOOL && setting->type != SettingType::KEYBIND && setting->type != SettingType::SLIDER)
+                if (setting->type == SettingType::UNKNOWN)
                     continue;
 
                 float settingHeight = textHeight;
                 if (setting->type == SettingType::SLIDER) {
                     settingHeight = textHeight + sliderExtraHeight;
+                }
+
+                if (setting->type == SettingType::ENUM) {
+                    auto* es = static_cast<EnumSetting*>(setting);
+                    if (es->extended) {
+                        settingHeight += textHeight * es->enumList.size();
+                    }
                 }
 
                 Vector4 sRect(
@@ -339,7 +356,7 @@ void ClickGUI::onD2DRender() {
                     descriptionText = setting->description;
 
                 bool isLastSetting = (j == settings.size() - 1);
-                float settingRounding = isLastSetting ? rounding : 0.f;
+                float settingRounding = isLastSetting && isLastModule ? rounding : 0.f;
 
                 D2D::fillRectangle(
                     Vector4<float>(sRect.x, sRect.y, sRect.z, sRect.y + settingHeight),
@@ -389,7 +406,56 @@ void ClickGUI::onD2DRender() {
                         D2D::fillGlowingCircle(circleCenter, circleRadius, glowColor, 3.f);
                     }
                 }
+                if (setting->type == SettingType::ENUM) {
+                    auto* es = static_cast<EnumSetting*>(setting);
+                    if (!es->extended) es->extended = false;
 
+                    float mainLineHeight = textHeight;
+                    Vector4 sRect(hRect.x, yOffset, hRect.z, yOffset + mainLineHeight);
+
+                    D2D::drawText(Vector2(sRect.x + textPaddingX, sRect.y + (mainLineHeight - D2D::getTextHeight("X", textSize)) * 0.5f),
+                        setting->name + ":",
+                        Color(175.f, 175.f, 175.f),
+                        textSize);
+
+                    std::string valueName = *es->value >= 0 && *es->value < es->enumList.size() ? es->enumList[*es->value] : "None";
+                    float valueTextWidth = D2D::getTextWidth(valueName, textSize);
+                    Vector2 valueTextPos(sRect.z - textPaddingX - valueTextWidth, sRect.y + (mainLineHeight - D2D::getTextHeight("X", textSize)) * 0.5f);
+                    D2D::drawText(valueTextPos, valueName, Color(255.f, 255.f, 255.f), textSize);
+
+                    if (sRect.contains(mousePos) && isLeftClickDown) {
+                        *es->value = (*es->value + 1) % es->enumList.size();
+                        isLeftClickDown = false;
+                    }
+
+                    if (sRect.contains(mousePos) && isRightClickDown) {
+                        es->extended = !es->extended;
+                        isRightClickDown = false;
+                    }
+
+                    yOffset += mainLineHeight;
+
+                    if (es->extended) {
+                        float optionHeight = textHeight;
+                        for (size_t k = 0; k < es->enumList.size(); k++) {
+                            Vector4 optRect(hRect.x, yOffset, hRect.z, yOffset + optionHeight);
+                            bool isLastOption = (k == es->enumList.size() - 1) && j == settings.size() - 1;
+
+                            Color bgColor = Gray;
+                            D2D::fillRectangle(optRect, bgColor, isLastOption ? rounding : 0.f, isLastOption ? D2D::CornerRoundType::BottomOnly : D2D::CornerRoundType::None);
+
+                            Vector2 optText(optRect.x + textPaddingX, optRect.y + (optionHeight - D2D::getTextHeight("X", textSize)) * 0.5f);
+                            D2D::drawText(optText, es->enumList[k], (*es->value == int(k) ? accentColor2 : Color(255.f, 255.f, 255.f)), textSize);
+
+                            if (optRect.contains(mousePos) && isLeftClickDown) {
+                                *es->value = int(k);
+                                isLeftClickDown = false;
+                            }
+
+                            yOffset += optionHeight;
+                        }
+                    }
+                }
                 if (setting->type == SettingType::KEYBIND) {
                     auto* ks = static_cast<KeybindSetting*>(setting);
                     int& key = *ks->value;
@@ -405,7 +471,6 @@ void ClickGUI::onD2DRender() {
                     D2D::drawText(sText, setting->name + ":", Color(175.f, 175.f, 175.f), textSize);
                     D2D::drawText(keyText, keyName, Color(255.f, 255.f, 255.f), textSize);
                 }
-
                 if (setting->type == SettingType::SLIDER) {
                     auto* ss = static_cast<SliderSettingBase*>(setting);
 
@@ -434,9 +499,8 @@ void ClickGUI::onD2DRender() {
                     D2D::drawText(sText, setting->name + ":", Color(175, 175, 175), textSize);
 
                     bool over =
-                        mousePos.x >= sliderX && mousePos.x <= sliderX + sliderWidth &&
-                        mousePos.y >= sliderY - sliderH * 2.f &&
-                        mousePos.y <= sliderY + sliderH * 2.f;
+                        mousePos.x >= sRect.x && mousePos.x <= sRect.z &&
+                        mousePos.y >= sRect.y && mousePos.y <= sRect.w;
 
                     float targetNormalized = 0.f;
 
@@ -500,7 +564,6 @@ void ClickGUI::onD2DRender() {
                 }
 
                 D2D::endClip();
-
                 float settingAnimHeight2 = settingHeight * mod->animProgress;
                 yOffset += settingAnimHeight2;
             }

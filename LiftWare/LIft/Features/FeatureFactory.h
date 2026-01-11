@@ -5,6 +5,10 @@
 
 #include "Categories/Visual/ArrayList.h"
 #include "Categories/Visual/ClickGUI.h"
+#include "Categories/Visual/NoCrosshair.h"
+#include "Categories/Visual/NoHurtCam.h"
+#include "Categories/Visual/NoEatBob.h"
+#include "Categories/Visual/Theme.h"
 
 #include "Categories/Combat/KillAura.h"
 

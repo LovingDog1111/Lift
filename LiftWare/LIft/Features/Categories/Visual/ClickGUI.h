@@ -33,6 +33,7 @@ private:
     bool isRightClickDown;
     bool isHoldingLeftClick;
     bool isHoldingRightClick;
+    float rounding = 6.f;
 public:
     std::vector<Header*> windowList;
     Header* draggingWindowPtr = nullptr;

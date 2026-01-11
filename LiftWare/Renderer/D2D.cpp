@@ -145,21 +145,14 @@ Vector2<float> D2D::getWindowSize() {
 }
 
 void D2D::drawText(const Vector2<float>& textPos, const std::string& textStr, const Color& color, float textSize, bool storeTextLayout, bool bold) {
-	IDWriteTextLayout* textLayout = getTextLayout(textStr, textSize, storeTextLayout, false);
+	IDWriteTextLayout* textLayout = getTextLayout(textStr, textSize, storeTextLayout, bold);
 
-	ID2D1SolidColorBrush* shadowColorBrush = getSolidColorBrush(Color(0, 0, 0, color.a));
-	d2dDeviceContext->DrawTextLayout(D2D1::Point2F(textPos.x + (1.f * textSize), textPos.y + (1.f * textSize)), textLayout, shadowColorBrush);
+	d2dDeviceContext->SetTextAntialiasMode(D2D1_TEXT_ANTIALIAS_MODE_CLEARTYPE);
+
+	ID2D1SolidColorBrush* shadowBrush = getSolidColorBrush(Color(0, 0, 0, color.a));
+	d2dDeviceContext->DrawTextLayout(D2D1::Point2F(textPos.x + 1.f, textPos.y + 1.f), textLayout, shadowBrush);
 
 	ID2D1SolidColorBrush* colorBrush = getSolidColorBrush(color);
-
-	if (bold) {
-		float offset = 0.05f * textSize;
-		d2dDeviceContext->DrawTextLayout(D2D1::Point2F(textPos.x - offset, textPos.y), textLayout, colorBrush);
-		d2dDeviceContext->DrawTextLayout(D2D1::Point2F(textPos.x + offset, textPos.y), textLayout, colorBrush);
-		d2dDeviceContext->DrawTextLayout(D2D1::Point2F(textPos.x, textPos.y - offset), textLayout, colorBrush);
-		d2dDeviceContext->DrawTextLayout(D2D1::Point2F(textPos.x, textPos.y + offset), textLayout, colorBrush);
-	}
-
 	d2dDeviceContext->DrawTextLayout(D2D1::Point2F(textPos.x, textPos.y), textLayout, colorBrush);
 }
 
@@ -603,6 +596,7 @@ IDWriteTextFormat* getTextFormat(float textSize, bool bold = false) {
 	if (!cached) {
 		std::wstring fontNameWide = to_wide(currentD2DFont);
 		const WCHAR* fontName = fontNameWide.c_str();
+
 		d2dWriteFactory->CreateTextFormat(
 			fontName,
 			nullptr,
@@ -613,6 +607,7 @@ IDWriteTextFormat* getTextFormat(float textSize, bool bold = false) {
 			L"en-us",
 			cached.put()
 		);
+		d2dDeviceContext->SetTextAntialiasMode(D2D1_TEXT_ANTIALIAS_MODE_CLEARTYPE);
 	}
 	return cached.get();
 }
@@ -620,8 +615,9 @@ IDWriteTextFormat* getTextFormat(float textSize, bool bold = false) {
 IDWriteTextLayout* getTextLayout(const std::string& textStr, float textSize, bool storeTextLayout, bool bold) {
 	std::wstring wideText = to_wide(textStr);
 	const WCHAR* text = wideText.c_str();
-	IDWriteTextFormat* textFormat = getTextFormat(textSize, false);
-	uint64_t textLayoutKey = getTextLayoutKey(textStr, textSize) ^ (false ? 0xDEADBEEF : 0); // separate cache for bold
+	IDWriteTextFormat* textFormat = getTextFormat(textSize, bold);
+
+	uint64_t textLayoutKey = getTextLayoutKey(textStr, textSize) ^ (bold ? 0xDEADBEEF : 0); // separate cache for bold
 
 	if (storeTextLayout) {
 		if (!textLayoutCache[textLayoutKey]) {
@@ -630,7 +626,7 @@ IDWriteTextLayout* getTextLayout(const std::string& textStr, float textSize, boo
 				(UINT32)wcslen(text),
 				textFormat,
 				FLT_MAX,
-				0.f,
+				FLT_MAX,
 				textLayoutCache[textLayoutKey].put()
 			);
 		}
@@ -643,14 +639,13 @@ IDWriteTextLayout* getTextLayout(const std::string& textStr, float textSize, boo
 				(UINT32)wcslen(text),
 				textFormat,
 				FLT_MAX,
-				0.f,
+				FLT_MAX,
 				textLayoutTemporary[textLayoutKey].put()
 			);
 		}
 		return textLayoutTemporary[textLayoutKey].get();
 	}
 }
-
 
 ID2D1SolidColorBrush* getSolidColorBrush(const Color& color) {
 	uint32_t colorBrushKey = Colors::ColorToUInt(color);

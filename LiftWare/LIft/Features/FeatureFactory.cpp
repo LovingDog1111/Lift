@@ -4,6 +4,10 @@
 void FeatureFactory::init() {
 	moduleList.push_back(new Test());
 	moduleList.push_back(new ArrayList());
+	moduleList.push_back(new NoCrosshair());
+	moduleList.push_back(new NoHurtCam());
+	moduleList.push_back(new NoEatBob());
+	moduleList.push_back(new Theme());
 	moduleList.push_back(new KillAura());
 	moduleList.push_back(new Fly());
 	moduleList.push_back(new ClickGUI());

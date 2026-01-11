@@ -81,9 +81,13 @@ void Feature::toggle() {
 }
 
 void Feature::onDisable() {
+	this->enableAnimProgress = 0.0f;
+	this->disableAnimProgress = 1.0f;
 }
 
 void Feature::onEnable() {
+	this->enableAnimProgress = 1.0f;
+	this->disableAnimProgress = 0.0f;
 }
 
 void Feature::onNormalTick(LocalPlayer* localPlayer) {

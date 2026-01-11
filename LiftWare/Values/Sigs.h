@@ -1,5 +1,6 @@
 #pragma once
 #include <string_view>
+#include <string>
 
 class Sigs {
 public:
@@ -15,5 +16,8 @@ public:
 	inline static constexpr std::string_view ActorSetRot = "4C 8B DC 49 89 73 10 49 89 7B 20 55 49 8D 6B A1 48 81 EC ? ? ? ? 48 8B";
 	inline static constexpr std::string_view TryGetActorHeadRotationComponent = "E8 ? ? ? ? 48 85 C0 74 57 F3 0F";
 	inline static constexpr std::string_view KeyMouseFunc = "48 8B C4 48 89 58 ? 48 89 68 ? 48 89 70 ? 57 41 54 41 55 41 56 41 57 48 83 EC ? 44 0F B7 BC 24 ? ? ? ? 48 8B D9";
+	inline static constexpr std::string_view HudCursorRenderer_render = "48 8B C4 48 89 58 20 55 56 57 41 54 41 55 41 56 41 57 48 8D A8 68 FA";
+	inline static constexpr std::string_view CauseHurtCamFunc = "48 89 5C 24 ? 57 48 83 EC 30 48 8B F9 80 FA";
+	inline static constexpr std::string_view NoEatBobSig = "F3 0F 10 0C 88 F3 0F 59 0D ? ? ? ? 8B 05";
 	inline static const std::string version = "1.21.2";
 };

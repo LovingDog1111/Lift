@@ -41,19 +41,26 @@ namespace Memory {
         return a ? a + 5 + *reinterpret_cast<int*>(a + 1) : 0;
     }
 
-    inline void Patch(void* d, void* s, size_t n) {
-        DWORD o;
-        VirtualProtect(d, n, PAGE_EXECUTE_READWRITE, &o);
-        memcpy(d, s, n);
-        VirtualProtect(d, n, o, &o);
-    }
+	inline void nopBytes(void* dst, unsigned int size) {
+		DWORD oldprotect;
+		VirtualProtect(dst, size, PAGE_EXECUTE_READWRITE, &oldprotect);
+		memset(dst, 0x90, size);
+		VirtualProtect(dst, size, oldprotect, &oldprotect);
+	}
 
-    inline void Nop(void* d, size_t n) {
-        DWORD o;
-        VirtualProtect(d, n, PAGE_EXECUTE_READWRITE, &o);
-        memset(d, 0x90, n);
-        VirtualProtect(d, n, o, &o);
-    }
+	inline void copyBytes(void* src, void* dst, unsigned int size) {
+		DWORD oldprotect;
+		VirtualProtect(src, size, PAGE_EXECUTE_READWRITE, &oldprotect);
+		memcpy(dst, src, size);
+		VirtualProtect(src, size, oldprotect, &oldprotect);
+	}
+
+	inline void patchBytes(void* dst, void* src, unsigned int size) {
+		DWORD oldprotect;
+		VirtualProtect(dst, size, PAGE_EXECUTE_READWRITE, &oldprotect);
+		memcpy(dst, src, size);
+		VirtualProtect(dst, size, oldprotect, &oldprotect);
+	}
 
     static uintptr_t ResolveRef(uintptr_t addr) {
         if (!addr)

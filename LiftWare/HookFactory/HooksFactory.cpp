@@ -9,6 +9,8 @@
 #include "Hooks/ActorSetRotHook.h"
 #include "Hooks/ResizeBuffersHook.h"
 #include "Hooks/PresentHook.h"
+#include "Hooks/HurtCamHook.h"
+#include "Hooks/HudCursorRendererHook.h"
 #include "../Lift/Features/FeatureFactory.h"
 #include "../Values/Sigs.h"
 
@@ -21,6 +23,8 @@ void HooksFactory::init() {
 	RequestHook<KeyMapHook>(Sigs::KeyPressFunc, "KeyPressFunc");
 	RequestHook<KeyMouseHook>(Sigs::KeyMouseFunc, "KeyMouseFunc");
 	RequestHook<ActorSetRotHook>(Sigs::ActorSetRot, "ActorSetRot");
+	RequestHook<HudCursorRendererHook>(Sigs::HudCursorRenderer_render, "HudCursorRenderer_render");
+	RequestHook<HurtCamHook>(Sigs::CauseHurtCamFunc, "CauseHurtCamFunc");
 
 	{
 		uintptr_t** PlayerVTable = (uintptr_t**)Memory::GetVTableFromSignature(Sigs::PlayerVtable);
