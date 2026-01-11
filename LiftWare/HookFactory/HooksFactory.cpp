@@ -5,6 +5,7 @@
 #include "Hooks/ActorNormalTickHook.h"
 #include "Hooks/SendChatMessageHook.h"
 #include "Hooks/KeyMapHook.h"
+#include "Hooks/KeyMouseHook.h"
 #include "Hooks/ActorSetRotHook.h"
 #include "Hooks/ResizeBuffersHook.h"
 #include "Hooks/PresentHook.h"
@@ -18,6 +19,7 @@ void HooksFactory::init() {
 	RequestHook<GammaHook>(Sigs::OptionsGetGamma);
 	RequestHook<SendChatMessageHook>(Memory::getFuncFromCall(Memory::FindSignature(Sigs::ClientInstanceScreenModelSendChatMessage, "ClientInstanceScreenModelSendChatMessage")));
 	RequestHook<KeyMapHook>(Sigs::KeyPressFunc);
+	RequestHook<KeyMouseHook>(Sigs::KeyMouseFunc);
 	RequestHook<ActorSetRotHook>(Sigs::ActorSetRot);
 
 	{

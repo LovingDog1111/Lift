@@ -26,7 +26,7 @@ static std::unordered_map<uint32_t, winrt::com_ptr<ID2D1SolidColorBrush>> colorB
 static std::unordered_map<uint64_t, winrt::com_ptr<IDWriteTextLayout>> textLayoutTemporary;
 
 static int currentD2DFontSize = 20;
-static std::string currentD2DFont = "Verdana";
+static std::string currentD2DFont = "Mojang";
 static bool isFontItalic = false;
 
 static bool initD2D = false;
@@ -42,7 +42,7 @@ void SafeRelease(T*& ptr) {
 std::wstring to_wide(const std::string& str);
 uint64_t getTextLayoutKey(const std::string& textStr, float textSize);
 IDWriteTextFormat* getTextFormat(float textSize);
-IDWriteTextLayout* getTextLayout(const std::string& textStr, float textSize, bool storeTextLayout = true);
+IDWriteTextLayout* getTextLayout(const std::string& textStr, float textSize, bool storeTextLayout = true, bool bold = false);
 ID2D1SolidColorBrush* getSolidColorBrush(const Color& color);
 
 void D2D::NewFrame(IDXGISwapChain3* swapChain, ID3D11Device* d3d11Device, float fxdpi) {
@@ -145,8 +145,8 @@ Vector2<float> D2D::getWindowSize() {
 	return Vector2<float>((float)size.width, (float)size.height);
 }
 
-void D2D::drawText(const Vector2<float>& textPos, const std::string& textStr, const Color& color, float textSize, bool storeTextLayout) {
-	IDWriteTextLayout* textLayout = getTextLayout(textStr, textSize, storeTextLayout);
+void D2D::drawText(const Vector2<float>& textPos, const std::string& textStr, const Color& color, float textSize, bool storeTextLayout, bool bold) {
+	IDWriteTextLayout* textLayout = getTextLayout(textStr, textSize, storeTextLayout, bold);
 
 	ID2D1SolidColorBrush* shadowColorBrush = getSolidColorBrush(Color(0, 0, 0, color.a));
 	d2dDeviceContext->DrawTextLayout(D2D1::Point2F(textPos.x + 2.f, textPos.y + 2.f), textLayout, shadowColorBrush);
@@ -155,16 +155,16 @@ void D2D::drawText(const Vector2<float>& textPos, const std::string& textStr, co
 	d2dDeviceContext->DrawTextLayout(D2D1::Point2F(textPos.x, textPos.y), textLayout, colorBrush);
 }
 
-float D2D::getTextWidth(const std::string& textStr, float textSize, bool storeTextLayout) {
-	IDWriteTextLayout* textLayout = getTextLayout(textStr, textSize, storeTextLayout);
+float D2D::getTextWidth(const std::string& textStr, float textSize, bool storeTextLayout, bool bold) {
+	IDWriteTextLayout* textLayout = getTextLayout(textStr, textSize, storeTextLayout, bold);
 	DWRITE_TEXT_METRICS textMetrics;
 	textLayout->GetMetrics(&textMetrics);
 
 	return textMetrics.widthIncludingTrailingWhitespace;
 }
 
-float D2D::getTextHeight(const std::string& textStr, float textSize, bool storeTextLayout) {
-	IDWriteTextLayout* textLayout = getTextLayout(textStr, textSize, storeTextLayout);
+float D2D::getTextHeight(const std::string& textStr, float textSize, bool storeTextLayout, bool bold) {
+	IDWriteTextLayout* textLayout = getTextLayout(textStr, textSize, storeTextLayout, bold);
 	DWRITE_TEXT_METRICS textMetrics;
 	textLayout->GetMetrics(&textMetrics);
 
@@ -176,14 +176,124 @@ void D2D::drawLine(const Vector2<float>& startPos, const Vector2<float>& endPos,
 	d2dDeviceContext->DrawLine(D2D1::Point2F(startPos.x, startPos.y), D2D1::Point2F(endPos.x, endPos.y), colorBrush, width);
 }
 
-void D2D::drawRectangle(const Vector4<float>& rect, const Color& color, float width) {
-	ID2D1SolidColorBrush* colorBrush = getSolidColorBrush(color);
-	d2dDeviceContext->DrawRectangle(D2D1::RectF(rect.x, rect.y, rect.z, rect.w), colorBrush, width);
+void D2D::drawRectangle(const Vector4<float>& rect, const Color& color, float width, float rounding, CornerRoundType roundType) {
+	ID2D1SolidColorBrush* brush = getSolidColorBrush(color);
+
+	if (rounding <= 0.0f || roundType == CornerRoundType::None) {
+		d2dDeviceContext->DrawRectangle(D2D1::RectF(rect.x, rect.y, rect.z, rect.w), brush, width);
+		return;
+	}
+
+	if (roundType == CornerRoundType::Full) {
+		D2D1_ROUNDED_RECT roundedRect = { D2D1::RectF(rect.x, rect.y, rect.z, rect.w), rounding, rounding };
+		d2dDeviceContext->DrawRoundedRectangle(&roundedRect, brush, width);
+		return;
+	}
+
+	ID2D1PathGeometry* geometry = nullptr;
+	ID2D1GeometrySink* sink = nullptr;
+	d2dFactory->CreatePathGeometry(&geometry);
+	geometry->Open(&sink);
+
+	float x1 = rect.x, y1 = rect.y, x2 = rect.z, y2 = rect.w;
+
+	bool topLeft = roundType == CornerRoundType::TopOnly || roundType == CornerRoundType::SidesOnly || roundType == CornerRoundType::Left;
+	bool topRight = roundType == CornerRoundType::TopOnly || roundType == CornerRoundType::SidesOnly || roundType == CornerRoundType::Right;
+	bool bottomLeft = roundType == CornerRoundType::BottomOnly || roundType == CornerRoundType::SidesOnly || roundType == CornerRoundType::Left;
+	bool bottomRight = roundType == CornerRoundType::BottomOnly || roundType == CornerRoundType::SidesOnly || roundType == CornerRoundType::Right;
+
+	sink->BeginFigure(D2D1::Point2F(x1 + (topLeft ? rounding : 0), y1), D2D1_FIGURE_BEGIN_HOLLOW);
+
+	sink->AddLine(D2D1::Point2F(x2 - (topRight ? rounding : 0), y1));
+	if (topRight) sink->AddArc(D2D1::ArcSegment(
+		D2D1::Point2F(x2, y1 + rounding),
+		D2D1::SizeF(rounding, rounding), 0.0f,
+		D2D1_SWEEP_DIRECTION_CLOCKWISE, D2D1_ARC_SIZE_SMALL));
+
+	sink->AddLine(D2D1::Point2F(x2, y2 - (bottomRight ? rounding : 0)));
+	if (bottomRight) sink->AddArc(D2D1::ArcSegment(
+		D2D1::Point2F(x2 - rounding, y2),
+		D2D1::SizeF(rounding, rounding), 0.0f,
+		D2D1_SWEEP_DIRECTION_CLOCKWISE, D2D1_ARC_SIZE_SMALL));
+
+	sink->AddLine(D2D1::Point2F(x1 + (bottomLeft ? rounding : 0), y2));
+	if (bottomLeft) sink->AddArc(D2D1::ArcSegment(
+		D2D1::Point2F(x1, y2 - rounding),
+		D2D1::SizeF(rounding, rounding), 0.0f,
+		D2D1_SWEEP_DIRECTION_CLOCKWISE, D2D1_ARC_SIZE_SMALL));
+
+	sink->AddLine(D2D1::Point2F(x1, y1 + (topLeft ? rounding : 0)));
+	if (topLeft) sink->AddArc(D2D1::ArcSegment(
+		D2D1::Point2F(x1 + rounding, y1),
+		D2D1::SizeF(rounding, rounding), 0.0f,
+		D2D1_SWEEP_DIRECTION_CLOCKWISE, D2D1_ARC_SIZE_SMALL));
+
+	sink->EndFigure(D2D1_FIGURE_END_OPEN);
+	sink->Close();
+	sink->Release();
+
+	d2dDeviceContext->DrawGeometry(geometry, brush, width);
+	geometry->Release();
 }
 
-void D2D::fillRectangle(const Vector4<float>& rect, const Color& color) {
-	ID2D1SolidColorBrush* colorBrush = getSolidColorBrush(color);
-	d2dDeviceContext->FillRectangle(D2D1::RectF(rect.x, rect.y, rect.z, rect.w), colorBrush);
+void D2D::fillRectangle(const Vector4<float>& rect, const Color& color, float rounding, CornerRoundType roundType) {
+	ID2D1SolidColorBrush* brush = getSolidColorBrush(color);
+
+	if (rounding <= 0.0f || roundType == CornerRoundType::None) {
+		d2dDeviceContext->FillRectangle(D2D1::RectF(rect.x, rect.y, rect.z, rect.w), brush);
+		return;
+	}
+
+	if (roundType == CornerRoundType::Full) {
+		D2D1_ROUNDED_RECT roundedRect = { D2D1::RectF(rect.x, rect.y, rect.z, rect.w), rounding, rounding };
+		d2dDeviceContext->FillRoundedRectangle(&roundedRect, brush);
+		return;
+	}
+
+	ID2D1PathGeometry* geometry = nullptr;
+	ID2D1GeometrySink* sink = nullptr;
+	d2dFactory->CreatePathGeometry(&geometry);
+	geometry->Open(&sink);
+
+	float x1 = rect.x, y1 = rect.y, x2 = rect.z, y2 = rect.w;
+
+	bool topLeft = roundType == CornerRoundType::TopOnly || roundType == CornerRoundType::SidesOnly || roundType == CornerRoundType::Left;
+	bool topRight = roundType == CornerRoundType::TopOnly || roundType == CornerRoundType::SidesOnly || roundType == CornerRoundType::Right;
+	bool bottomLeft = roundType == CornerRoundType::BottomOnly || roundType == CornerRoundType::SidesOnly || roundType == CornerRoundType::Left;
+	bool bottomRight = roundType == CornerRoundType::BottomOnly || roundType == CornerRoundType::SidesOnly || roundType == CornerRoundType::Right;
+
+	sink->BeginFigure(D2D1::Point2F(x1 + (topLeft ? rounding : 0), y1), D2D1_FIGURE_BEGIN_FILLED);
+
+	sink->AddLine(D2D1::Point2F(x2 - (topRight ? rounding : 0), y1));
+	if (topRight) sink->AddArc(D2D1::ArcSegment(
+		D2D1::Point2F(x2, y1 + rounding),
+		D2D1::SizeF(rounding, rounding), 0.0f,
+		D2D1_SWEEP_DIRECTION_CLOCKWISE, D2D1_ARC_SIZE_SMALL));
+
+	sink->AddLine(D2D1::Point2F(x2, y2 - (bottomRight ? rounding : 0)));
+	if (bottomRight) sink->AddArc(D2D1::ArcSegment(
+		D2D1::Point2F(x2 - rounding, y2),
+		D2D1::SizeF(rounding, rounding), 0.0f,
+		D2D1_SWEEP_DIRECTION_CLOCKWISE, D2D1_ARC_SIZE_SMALL));
+
+	sink->AddLine(D2D1::Point2F(x1 + (bottomLeft ? rounding : 0), y2));
+	if (bottomLeft) sink->AddArc(D2D1::ArcSegment(
+		D2D1::Point2F(x1, y2 - rounding),
+		D2D1::SizeF(rounding, rounding), 0.0f,
+		D2D1_SWEEP_DIRECTION_CLOCKWISE, D2D1_ARC_SIZE_SMALL));
+
+	sink->AddLine(D2D1::Point2F(x1, y1 + (topLeft ? rounding : 0)));
+	if (topLeft) sink->AddArc(D2D1::ArcSegment(
+		D2D1::Point2F(x1 + rounding, y1),
+		D2D1::SizeF(rounding, rounding), 0.0f,
+		D2D1_SWEEP_DIRECTION_CLOCKWISE, D2D1_ARC_SIZE_SMALL));
+
+	sink->EndFigure(D2D1_FIGURE_END_CLOSED);
+	sink->Close();
+	sink->Release();
+
+	d2dDeviceContext->FillGeometry(geometry, brush);
+	geometry->Release();
 }
 
 void D2D::drawCircle(const Vector2<float>& centerPos, const Color& color, float radius, float width) {
@@ -246,34 +356,33 @@ uint64_t getTextLayoutKey(const std::string& textStr, float textSize) {
 	return combinedHash;
 }
 
-IDWriteTextFormat* getTextFormat(float textSize) {
-	if (textFormatCache[textSize].get() == nullptr) {
+IDWriteTextFormat* getTextFormat(float textSize, bool bold = false) {
+	auto& cached = textFormatCache[textSize];
+	if (!cached) {
 		std::wstring fontNameWide = to_wide(currentD2DFont);
 		const WCHAR* fontName = fontNameWide.c_str();
 		d2dWriteFactory->CreateTextFormat(
 			fontName,
 			nullptr,
-			DWRITE_FONT_WEIGHT_NORMAL,
+			bold ? DWRITE_FONT_WEIGHT_BOLD : DWRITE_FONT_WEIGHT_NORMAL,
 			isFontItalic ? DWRITE_FONT_STYLE_ITALIC : DWRITE_FONT_STYLE_NORMAL,
 			DWRITE_FONT_STRETCH_NORMAL,
 			(float)currentD2DFontSize * textSize,
 			L"en-us",
-			textFormatCache[textSize].put()
+			cached.put()
 		);
 	}
-
-	return textFormatCache[textSize].get();
+	return cached.get();
 }
 
-IDWriteTextLayout* getTextLayout(const std::string& textStr, float textSize, bool storeTextLayout) {
-
+IDWriteTextLayout* getTextLayout(const std::string& textStr, float textSize, bool storeTextLayout, bool bold) {
 	std::wstring wideText = to_wide(textStr);
 	const WCHAR* text = wideText.c_str();
-	IDWriteTextFormat* textFormat = getTextFormat(textSize);
-	uint64_t textLayoutKey = getTextLayoutKey(textStr, textSize);
+	IDWriteTextFormat* textFormat = getTextFormat(textSize, bold);
+	uint64_t textLayoutKey = getTextLayoutKey(textStr, textSize) ^ (bold ? 0xDEADBEEF : 0); // separate cache for bold
 
 	if (storeTextLayout) {
-		if (textLayoutCache[textLayoutKey].get() == nullptr) {
+		if (!textLayoutCache[textLayoutKey]) {
 			d2dWriteFactory->CreateTextLayout(
 				text,
 				(UINT32)wcslen(text),
@@ -286,7 +395,7 @@ IDWriteTextLayout* getTextLayout(const std::string& textStr, float textSize, boo
 		return textLayoutCache[textLayoutKey].get();
 	}
 	else {
-		if (textLayoutTemporary[textLayoutKey].get() == nullptr) {
+		if (!textLayoutTemporary[textLayoutKey]) {
 			d2dWriteFactory->CreateTextLayout(
 				text,
 				(UINT32)wcslen(text),
@@ -299,6 +408,7 @@ IDWriteTextLayout* getTextLayout(const std::string& textStr, float textSize, boo
 		return textLayoutTemporary[textLayoutKey].get();
 	}
 }
+
 
 ID2D1SolidColorBrush* getSolidColorBrush(const Color& color) {
 	uint32_t colorBrushKey = Colors::ColorToUInt(color);

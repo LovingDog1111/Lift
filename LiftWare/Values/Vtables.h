@@ -25,6 +25,10 @@ public:
     inline static constexpr int MobSetSprinting = 153;
     /* MOB END */
 
+    /* LEVEL BEGIN */
+    inline static constexpr int GetRuntimeActorList = 278;
+    /* LEVEL END */
+
     /* PLAYER BEGIN */
     inline static constexpr int PlayerPlayEmote = 70;
     inline static constexpr int PlayerGetItemUseDuration = 162;

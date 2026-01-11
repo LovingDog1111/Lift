@@ -13,6 +13,7 @@ void Lift::checkSigs() { //make sure everything is working and up to date!
 		Memory::FindSignature(Sigs::PlayerVtable, "PlayerVTable");
 		Memory::FindSignature(Sigs::KeyPressFunc, "KeyMap");
 		Memory::FindSignature(Sigs::ActorSetRot, "ActorSetRot");
+        Memory::getFuncFromCall(Memory::FindSignature(Sigs::TryGetActorHeadRotationComponent, "TryGetActorHeadRotationComponent"));
     }
 }
 

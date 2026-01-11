@@ -18,6 +18,11 @@ struct Vector4 {
     Vector4<T>& operator-=(const Vector4<T>& other) { x -= other.x; y -= other.y; z -= other.z; w -= other.w; return *this; }
     Vector4<T>& operator*=(T scalar) { x *= scalar; y *= scalar; z *= scalar; w *= scalar; return *this; }
     Vector4<T>& operator/=(T scalar) { x /= scalar; y /= scalar; z /= scalar; w /= scalar; return *this; }
+
+    template<typename V>
+    bool contains(const V& p) const {
+        return p.x >= x && p.x <= z && p.y >= y && p.y <= w;
+    }
 };
 
 template<typename T>

@@ -30,7 +30,7 @@ bool SetPositionCommand::execute(const std::vector<std::string>& args) {
         return true;
     }
 
-    player->setPos(Vector3<float>(x, y, z));
+    player->setPosition(Vector3<float>(x, y, z));
 
     Lift::displayMessage(
         "Position set to %s%.2f%s, %s%.2f%s, %s%.2f%s",

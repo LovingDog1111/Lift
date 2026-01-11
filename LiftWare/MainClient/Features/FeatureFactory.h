@@ -1,7 +1,14 @@
 #pragma once
 #include "FeatureBase/FeatureBase.h"
+
 #include "Categories/Other/Test.h"
+
 #include "Categories/Visual/ArrayList.h"
+#include "Categories/Visual/ClickGUI.h"
+
+#include "Categories/Combat/KillAura.h"
+
+#include "Categories/Movement/Fly.h"
 
 class FeatureFactory {
 public:
@@ -21,6 +28,7 @@ public:
 		return nullptr;
 	}
 
+	static void onMouseUpdate(Vector2<float> mousePos, char mouseButton, char isDown);
 	static void onKeyUpdate(int key, bool isDown);
 	static void onNormalTick(LocalPlayer* localPlayer);
 	static void onUpdateRotation(LocalPlayer* localPlayer);

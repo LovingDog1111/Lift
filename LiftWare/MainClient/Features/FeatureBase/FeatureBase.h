@@ -15,7 +15,8 @@ enum class Category {
 	EXPLOIT = 1,
 	OTHER = 2,
 	PLAYER = 3,
-	VISUAL = 4
+	VISUAL = 4,
+	MOVEMENT = 5
 };
 
 class Feature {
@@ -29,6 +30,8 @@ private:
 	int toggleMode = 0;
 
 	std::vector<Setting*> settings;
+public:
+	bool extended = false;
 protected:
 	inline Setting* registerSetting(Setting* setting) {
 		this->settings.push_back(setting);
@@ -56,6 +59,7 @@ public:
 public:
 	virtual std::string getModeText();
 	virtual bool isEnabled();
+	virtual void onMouseUpdate(Vector2<float> mousePos, char mouseButton, char isDown);
 	virtual bool isVisible();
 	virtual bool isHoldMode();
 	virtual int getKeybind();

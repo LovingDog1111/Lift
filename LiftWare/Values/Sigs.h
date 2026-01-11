@@ -13,7 +13,9 @@ public:
 	inline static constexpr std::string_view PlayerVtable = "48 8D 05 ? ? ? ? 48 89 01 B8 ? ? ? ? 8D 50 FA 44 8D 48 ? 44 8D 40 ? 66 89 44 ? ? E8 ? ? ? ? 48 8B 8B";
 	inline static constexpr std::string_view KeyPressFunc = "48 ? ? 48 ? ? ? 4C 8D 05 ? ? ? ? 89";
 	inline static constexpr std::string_view ActorSetRot = "4C 8B DC 49 89 73 10 49 89 7B 20 55 49 8D 6B A1 48 81 EC ? ? ? ? 48 8B";
-
+	inline static constexpr std::string_view TryGetActorHeadRotationComponent = "E8 ? ? ? ? 48 85 C0 74 57 F3 0F";
+	inline static constexpr std::string_view KeyMouseFunc = "48 8B C4 48 89 58 ? 48 89 68 ? 48 89 70 ? 57 41 54 41 55 41 56 41 57 48 83 EC ? 44 0F B7 BC 24 ? ? ? ? 48 8B D9";
+	//try_getActorHeadRotationComponent "E8 ? ? ? ? 48 85 C0 74 57 F3 0F"
 	inline static const std::string version = "1.21.2";
 };
 

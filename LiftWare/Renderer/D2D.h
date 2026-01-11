@@ -13,6 +13,15 @@
 
 namespace D2D {
 	extern float deltaTime;
+	enum class CornerRoundType {
+		None,
+		BottomOnly,
+		TopOnly,
+		Full,
+		SidesOnly,
+		Left,
+		Right
+	};
 
 	void NewFrame(IDXGISwapChain3* swapChain, ID3D11Device* d3d11Device, float fxdpi);
 	void EndFrame();
@@ -21,12 +30,12 @@ namespace D2D {
 	void Flush();
 
 	Vector2<float> getWindowSize();
-	void drawText(const Vector2<float>& textPos, const std::string& textStr, const Color& color, float textSize = 1.f, bool storeTextLayout = true);
-	float getTextWidth(const std::string& textStr, float textSize = 1.f, bool storeTextLayout = true);
-	float getTextHeight(const std::string& textStr, float textSize = 1.f, bool storeTextLayout = true);
+	void drawText(const Vector2<float>& textPos, const std::string& textStr, const Color& color, float textSize = 1.f, bool storeTextLayout = true, bool bold = false);
+	float getTextWidth(const std::string& textStr, float textSize = 1.f, bool storeTextLayout = true, bool bold = false);
+	float getTextHeight(const std::string& textStr, float textSize = 1.f, bool storeTextLayout = true, bool bold = false);
 	void drawLine(const Vector2<float>& startPos, const Vector2<float>& endPos, const Color& color, float width = 1.f);
-	void drawRectangle(const Vector4<float>& rect, const Color& color, float width = 1.f);
-	void fillRectangle(const Vector4<float>& rect, const Color& color);
+	void drawRectangle(const Vector4<float>& rect, const Color& color, float width = 1.0f, float rounding = 0.0f, CornerRoundType roundType = CornerRoundType::None);
+	void fillRectangle(const Vector4<float>& rect, const Color& color, float rounding = 0.0f, CornerRoundType roundType = CornerRoundType::None);
 	void drawCircle(const Vector2<float>& centerPos, const Color& color, float radius, float width = 1.f);
 	void fillCircle(const Vector2<float>& centerPos, const Color& color, float radius);
 	void addBlur(const Vector4<float>& rect, float strength, bool flush = true);

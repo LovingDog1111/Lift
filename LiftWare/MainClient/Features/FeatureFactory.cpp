@@ -4,10 +4,17 @@
 void FeatureFactory::init() {
 	moduleList.push_back(new Test());
 	moduleList.push_back(new ArrayList());
+	moduleList.push_back(new KillAura());
+	moduleList.push_back(new Fly());
+	moduleList.push_back(new ClickGUI());
 
 	std::sort(moduleList.begin(), moduleList.end(), [](Feature* lhs, Feature* rhs) {
 		return lhs->getModuleName() < rhs->getModuleName();
 		});
+
+	getFeature<ClickGUI>()->InitClickGUI();
+	getFeature<ClickGUI>()->setEnabled(false);
+	getFeature<ArrayList>()->setEnabled(false);
 
 	Logger::Log("Feature Factory Initialized");
 }
@@ -62,6 +69,16 @@ void FeatureFactory::onUpdateRotation(LocalPlayer* localPlayer) {
 		if (mod->isEnabled() || mod->runOnBackground()) {
 			mod->onUpdateRotation(localPlayer);
 		}
+	}
+}
+//Vector2<float> mousePos, char mouseButton, char isDown
+
+void FeatureFactory::onMouseUpdate(Vector2<float> mousePos, char mouseButton, char isDown) {
+	if (!Lift::isInitialized())
+		return;
+
+	for (auto& mod : moduleList) {
+		mod->onMouseUpdate(mousePos, mouseButton, isDown);
 	}
 }
 

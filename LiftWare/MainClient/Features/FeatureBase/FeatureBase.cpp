@@ -37,6 +37,8 @@ void Feature::onKeyUpdate(int key, bool isDown) {
 	}
 }
 
+void Feature::onMouseUpdate(Vector2<float> mousePos, char mouseButton, char isDown) {}
+
 bool Feature::isEnabled() {
 	return enabled;
 }
