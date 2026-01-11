@@ -595,7 +595,6 @@
     <ClInclude Include="SDK\World\Level\Level.h" />
     <ClInclude Include="Time\Time.h" />
     <ClInclude Include="Values\AutoVTable\AutoVTableUpdater.h" />
-    <ClInclude Include="Values\meow.h" />
     <ClInclude Include="Values\Offsets.h" />
     <ClInclude Include="Values\Sigs.h" />
     <ClInclude Include="Values\VersionChecker.h" />
