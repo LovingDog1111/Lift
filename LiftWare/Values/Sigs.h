@@ -14,7 +14,7 @@ public:
 	inline static constexpr std::string_view KeyMouseFunc = "48 8B C4 48 89 58 ? 48 89 68 ? 48 89 70 ? 57 41 54 41 55 41 56 41 57 48 83 EC ? 44 0F B7 BC 24"; //updated
 	inline static constexpr std::string_view CauseHurtCamFunc = "40 53 56 57 48 83 EC ? 0F B6 C2"; //updated
 	inline static constexpr std::string_view NoEatBobSig = "F3 0F 10 14 88 F3 0F 59 15"; //1.21.94
-	inline static constexpr std::string_view OptionsVTable = "48 8D 05 ? ? ? ? ? ? ? 48 8B 89 ? ? ? ? BF"; //1.21.94
-	inline static constexpr std::string_view crosshair = "48 8B C4 48 89 58 ? 55 56 57 41 54 41 55 41 56 41 57 48 8D A8 ? ? ? ? 48 81 EC ? ? ? ? 0F 29 70 ? 0F 29 78 ? 44 0F 29 40 ? 44 0F 29 48 ? 48 8B 05 ? ? ? ? 48 33 C4 48 89 85 ? ? ? ? 4C 89 8D"; //1.21.94
-	inline static const std::string version = "1.21.134";
+	inline static constexpr std::string_view OptionsVTable = "48 8D 05 ? ? ? ? 48 89 01 48 8B 89 ? ? ? ? BF ? ? ? ? 48 85 C9 74 ? 8B C7"; //updated
+	inline static constexpr std::string_view crosshair = "48 89 5C 24 ? 55 56 57 41 54 41 55 41 56 41 57 48 8D AC 24 ? ? ? ? 48 81 EC ? ? ? ? 0F 29 B4 24 ? ? ? ? 48 8B 05 ? ? ? ? 48 33 C4 48 89 85 ? ? ? ? 4C 89 8D ? ? ? ? 49 8B F8"; //updated lel
+	inline static const std::string version = "1.21.132";
 };
