@@ -4,7 +4,7 @@
 
 class Sigs {
 public:
-	inline static constexpr std::string_view ClientInstanceUpdate = "48 89 5C 24 ? 48 89 74 24 ? 48 89 7C 24 ? 55 41 56 41 57 48 8D AC 24 ? ? ? ? 48 81 EC ? ? ? ? 48 8B 05 ? ? ? ? 48 33 C4 48 89 85 ? ? ? ? 44 0F B6 FA"; //1.21.94
+	inline static constexpr std::string_view ClientInstanceUpdate = "48 89 5C 24 ? 48 89 74 24 ? 48 89 7C 24 ? 55 41 54 41 55 41 56 41 57 48 8D AC 24 ? ? ? ? 48 81 EC ? ? ? ? 48 8B 05 ? ? ? ? 48 33 C4 48 89 85 ? ? ? ? 44 0F B6 FA 48 8B F1 33 DB"; //1.21.94
     inline static constexpr std::string_view ClientInstanceScreenModelSendChatMessage = "E8 ? ? ? ? 3C ? 75 ? 48 8B 8F"; //1.21.94
 	inline static constexpr std::string_view GameMode_BaseUseItem = "E8 ? ? ? ? 84 C0 74 ? 48 8B ? 48 8B ? 48 8B ? ? ? ? ? FF 15 ? ? ? ? 48 85"; //1.21.94
 	inline static constexpr std::string_view GameMode_GetDestroyRate = "E8 ? ? ? ? 0F 28 F8 49 8B 4E"; //1.21.94
