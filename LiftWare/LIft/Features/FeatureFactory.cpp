@@ -2,16 +2,29 @@
 #include "../Lift.h"
 
 void FeatureFactory::init() {
-	moduleList.push_back(new Test());
-	moduleList.push_back(new ArrayList());
-	moduleList.push_back(new NoCrosshair());
-	moduleList.push_back(new NoHurtCam());
-	moduleList.push_back(new NoEatBob());
-	moduleList.push_back(new CustomSky());
-	moduleList.push_back(new Theme());
-	moduleList.push_back(new KillAura());
-	moduleList.push_back(new Fly());
-	moduleList.push_back(new ClickGUI());
+
+	{		      /* VISUAL */
+		moduleList.push_back(new ArrayList());
+		moduleList.push_back(new NoCrosshair());
+		moduleList.push_back(new NoHurtCam());
+		moduleList.push_back(new NoEatBob());
+		moduleList.push_back(new CustomSky());
+		moduleList.push_back(new Theme());
+		moduleList.push_back(new ClickGUI());
+	}
+
+	{		     /* MOVEMENT */
+		moduleList.push_back(new Fly());
+		moduleList.push_back(new Speed());
+	}
+
+	{		      /* COMBAT */
+		moduleList.push_back(new KillAura());
+	}
+
+	{		       /* MISC */
+		moduleList.push_back(new Test());
+	}
 
 	std::sort(moduleList.begin(), moduleList.end(), [](Feature* lhs, Feature* rhs) {
 		return lhs->getModuleName() < rhs->getModuleName();

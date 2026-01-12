@@ -107,6 +107,7 @@
       </ForcedIncludeFiles>
     </ClCompile>
     <ClCompile Include="Libs\kiero\kiero.cpp" />
+    <ClCompile Include="Lift\Features\Categories\Movement\Speed.cpp" />
     <ClCompile Include="Lift\Features\Categories\Visual\CustomSky.cpp" />
     <ClCompile Include="Lift\Features\Categories\Visual\NoCrosshair.cpp" />
     <ClCompile Include="Lift\Features\Categories\Visual\NoEatBob.cpp" />
@@ -553,6 +554,7 @@
     <ClInclude Include="Libs\libhat\libhat\Traits.hpp" />
     <ClInclude Include="Libs\minhook\MinHook.h" />
     <ClInclude Include="Libs\xorstr.hpp" />
+    <ClInclude Include="Lift\Features\Categories\Movement\Speed.h" />
     <ClInclude Include="Lift\Features\Categories\Visual\CustomSky.h" />
     <ClInclude Include="Lift\Features\Categories\Visual\NoCrosshair.h" />
     <ClInclude Include="Lift\Features\Categories\Visual\NoEatBob.h" />
@@ -608,6 +610,7 @@
     <ClInclude Include="SDK\World\Components\ActorHeadRotationComponent.h" />
     <ClInclude Include="SDK\World\Components\ActorRotationComponent.h" />
     <ClInclude Include="SDK\World\Components\ActorTypeComponent.h" />
+    <ClInclude Include="SDK\World\Components\Flags.h" />
     <ClInclude Include="SDK\World\Components\StateVectorComponent.h" />
     <ClInclude Include="SDK\World\GameMode\GameMode.h" />
     <ClInclude Include="SDK\World\Level\Level.h" />

@@ -13,6 +13,7 @@
 #include "../Components/StateVectorComponent.h"
 #include "../Components/ActorHeadRotationComponent.h"
 #include "../Components/ActorTypeComponent.h"
+#include "../Components/Flags.h"
 
 class Actor {
 public:
@@ -39,6 +40,23 @@ public:
     Vector3<float> getPosition() {
         return getStateVectorComponent() ? getStateVectorComponent()->pos : Vector3<float>(0.f, 0.f, 0.f);
     }
+
+    bool isOnGround() {
+        return getEntityContext()->hasComponent<OnGroundFlagComponent>();
+    }
+
+    void Jump() {
+        return getEntityContext()->getOrAddComponent<JumpFromGroundRequestComponent>();
+    }
+
+    void setOnGround(bool state) {
+        if (state) {
+            return getEntityContext()->getOrAddComponent<OnGroundFlagComponent>();
+        }
+        else {
+            getEntityContext()->removeComponent<OnGroundFlagComponent>();
+        }
+    };
 
     void swing() {
         Memory::callVirtualFuncSolstice<void>(VTables::ActorSwing, this, "ActorSwing");

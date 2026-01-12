@@ -1,5 +1,4 @@
 #include "Fly.h"
-#include <cmath>
 
 Fly::Fly() : Feature("Fly", "Allows the player to fly freely.", Category::MOVEMENT) {
     registerSetting(new SliderSetting<float>("Speed", "Speed of the flight.", &flySpeed, flySpeed, 0.f, 2.f));
@@ -12,7 +11,7 @@ void Fly::onNormalTick(LocalPlayer* localPlayer) {
     velocity.y += 0.0f;
 
     if (Game::canUseMoveKeys()) {
-        float yaw = localPlayer->getActorRotationComponent()->presentRot.y;
+        float yaw = localPlayer->getActorRotationComponent()->mYaw;
 
         bool isForward = Game::isKeyDown('W');
         bool isLeft = Game::isKeyDown('A');
