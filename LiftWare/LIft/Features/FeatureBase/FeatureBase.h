@@ -9,6 +9,7 @@
 #include "Settings/Keybind.h"
 #include "Settings/Slider.h"
 #include "Settings/Enum.h"
+#include "../../Utils/Targets.h"
 
 #include "../../Renderer/D2D.h"
 

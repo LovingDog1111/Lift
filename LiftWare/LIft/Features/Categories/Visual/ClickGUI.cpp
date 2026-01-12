@@ -25,6 +25,7 @@ ClickGUI::Header::Header(std::string windowName, Vector2<float> startPos, Catego
 
 void ClickGUI::onDisable() {
     Game::clientInstance->grabMouse();
+    Game::clientInstance->mcGame->mouseGrabbed = false;
     isLeftClickDown = false;
     isRightClickDown = false;
     isHoldingLeftClick = false;
@@ -156,8 +157,8 @@ void ClickGUI::onD2DRender() {
     if (!initialized)
         return;
 
-    if (Game::canUseMoveKeys())
-        Game::clientInstance->releaseMouse();
+    Game::clientInstance->releaseMouse();
+    Game::clientInstance->mcGame->mouseGrabbed = true;
 
     static Vector2<float> oldMousePos = mousePos;
     mouseDelta = mousePos - oldMousePos;

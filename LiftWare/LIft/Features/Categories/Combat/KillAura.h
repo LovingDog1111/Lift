@@ -6,9 +6,13 @@ public:
     KillAura();
     void onUpdateRotation(LocalPlayer* localPlayer) override;
     void onNormalTick(LocalPlayer* localPlayer) override;
+
 private:
-    std::vector<Actor*> getTargets(Actor* localPlayer, float range);
+    Actor* getClosestTarget(Actor* localPlayer, float range);
+
     int rotations = 0;
     float reach = 6.f;
     Vector2<float> angles = { 0,0 };
+    int attackSpeed = 1; 
+    bool strict = false;
 };

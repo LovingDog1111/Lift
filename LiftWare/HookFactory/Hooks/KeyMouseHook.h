@@ -18,6 +18,7 @@ private:
 			clickGuiMod->onMouseUpdate(Vector2<float>((float)mouseX, (float)mouseY), mouseButton, isDown);
 			return;
 		}
+
 		oFunc(a1, mouseButton, isDown, mouseX, mouseY, relativeMovementX, relativeMovementY, a8);
 	}
 public:

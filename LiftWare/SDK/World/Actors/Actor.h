@@ -12,6 +12,7 @@
 #include "../Components/ActorRotationComponent.h"
 #include "../Components/StateVectorComponent.h"
 #include "../Components/ActorHeadRotationComponent.h"
+#include "../Components/ActorTypeComponent.h"
 
 class Actor {
 public:
@@ -25,6 +26,10 @@ public:
 
     StateVectorComponent* getStateVectorComponent() {
         return getEntityContext()->tryGetComponent<StateVectorComponent>();
+    }
+
+    ActorTypeComponent* getActorTypeComponent() {
+        return getEntityContext()->tryGetComponent<ActorTypeComponent>();
     }
 
     ActorRotationComponent* getActorRotationComponent() {
