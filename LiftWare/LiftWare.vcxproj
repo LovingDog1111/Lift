@@ -615,6 +615,7 @@
     <ClInclude Include="SDK\World\GameMode\GameMode.h" />
     <ClInclude Include="SDK\World\Level\Level.h" />
     <ClInclude Include="Time\Time.h" />
+    <ClInclude Include="Values\AutoOffsets\SmartOffsets.h" />
     <ClInclude Include="Values\AutoVTable\AutoVTableUpdater.h" />
     <ClInclude Include="Values\Offsets.h" />
     <ClInclude Include="Values\Pads.h" />
