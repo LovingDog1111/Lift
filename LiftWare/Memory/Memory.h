@@ -21,6 +21,11 @@ namespace Memory {
         return (*reinterpret_cast<R(__thiscall***)(void*, A...)>(p))[I](p, a...);
     }
 
+	inline uintptr_t GetVTableFunction(void* _this, int index) {
+		uintptr_t* vtable = *reinterpret_cast<uintptr_t**>(_this);
+		return vtable[index];
+	}
+
 	template<typename Ret, typename... Args>
 	inline Ret callVirtualFuncSolstice(int index, void* _this, const char* vtableName, Args... args) {
 		using Fn = Ret(__thiscall*)(void*, Args...);

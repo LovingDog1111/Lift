@@ -11,6 +11,7 @@ void FeatureFactory::init() {
 	moduleList.push_back(new Theme());
 	moduleList.push_back(new KillAura());
 	moduleList.push_back(new Fly());
+	moduleList.push_back(new Speed());
 	moduleList.push_back(new ClickGUI());
 
 	std::sort(moduleList.begin(), moduleList.end(), [](Feature* lhs, Feature* rhs) {
@@ -22,7 +23,6 @@ void FeatureFactory::init() {
 
 	Logger::Log("Feature Factory Initialized");
 }
-
 void FeatureFactory::shutdown() {
 	for (auto& mod : moduleList) {
 		mod->setEnabled(false);

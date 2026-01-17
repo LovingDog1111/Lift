@@ -25,6 +25,7 @@ ClickGUI::Header::Header(std::string windowName, Vector2<float> startPos, Catego
 
 void ClickGUI::onDisable() {
     Game::clientInstance->grabMouse();
+    Game::clientInstance->mcGame->mouseGrabbed = false;
     isLeftClickDown = false;
     isRightClickDown = false;
     isHoldingLeftClick = false;
@@ -124,10 +125,8 @@ void ClickGUI::onMouseUpdate(Vector2<float> mousePosA, char mouseButton, char is
 
 void ClickGUI::InitClickGUI() {
     setEnabled(false);
-    if (!Game::getClientInstance()) return;
 
-    //Vector2<float> screenSize = Game::getClientInstance()->guiData->windowSizeReal2;
-    Vector2<float> screenSize = { 1920, 1080 };
+    Vector2<float> screenSize = Game::clientInstance->guiData->windowSizeReal;
     float windowWidth = 200.f;
     float windowHeight = 20.f;
     int numWindows = 6;
@@ -158,8 +157,8 @@ void ClickGUI::onD2DRender() {
     if (!initialized)
         return;
 
-    if (Game::canUseMoveKeys())
-        Game::clientInstance->releaseMouse();
+    Game::clientInstance->releaseMouse();
+    Game::clientInstance->mcGame->mouseGrabbed = true;
 
     static Vector2<float> oldMousePos = mousePos;
     mouseDelta = mousePos - oldMousePos;
@@ -168,7 +167,7 @@ void ClickGUI::onD2DRender() {
     Color accentColor1 = Colors::getWaveColor(FeatureFactory::getFeature<Theme>()->color1, FeatureFactory::getFeature<Theme>()->color2, 0);
     Color accentColor2 = Colors::getWaveColor(FeatureFactory::getFeature<Theme>()->color1, FeatureFactory::getFeature<Theme>()->color2, 500);
 
-    Vector2<float> screenSize = { 1920, 1080 };
+    Vector2<float> screenSize = Game::clientInstance->guiData->windowSizeReal;
     D2D::fillRectangle(Vector4<float>(0.f, 0.f, screenSize.x, screenSize.y), Color(0, 0, 0, 125));
     D2D::addBlur(Vector4<float>(0.f, 0.f, screenSize.x, screenSize.y), 3.f);
 

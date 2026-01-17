@@ -14,6 +14,7 @@
 #include "Categories/Combat/KillAura.h"
 
 #include "Categories/Movement/Fly.h"
+#include "Categories/Movement/Speed.h"
 
 class FeatureFactory {
 public:
