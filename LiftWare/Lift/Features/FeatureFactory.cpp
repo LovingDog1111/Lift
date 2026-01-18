@@ -2,7 +2,7 @@
 #include "../Lift.h"
 
 void FeatureFactory::init() {
-	moduleList.push_back(new Test());
+	moduleList.push_back(new Disabler());
 	moduleList.push_back(new ArrayList());
 	moduleList.push_back(new NoCrosshair());
 	moduleList.push_back(new NoHurtCam());
@@ -10,6 +10,7 @@ void FeatureFactory::init() {
 	moduleList.push_back(new CustomSky());
 	moduleList.push_back(new Theme());
 	moduleList.push_back(new KillAura());
+	moduleList.push_back(new AntiHit());
 	moduleList.push_back(new Fly());
 	moduleList.push_back(new Speed());
 	moduleList.push_back(new ClickGUI());
@@ -54,6 +55,17 @@ void FeatureFactory::onNormalTick(LocalPlayer* localPlayer) {
 	}
 }
 
+void FeatureFactory::onSendPacket(Packet* packet) {
+	if (!Lift::isInitialized())
+		return;
+
+	for (auto& mod : moduleList) {
+		if (mod->isEnabled() || mod->runOnBackground()) {
+			mod->onSendPacket(packet);
+		}
+	}
+}
+
 void FeatureFactory::onD2DRender() {
 	if (!Lift::isInitialized())
 		return;
@@ -75,7 +87,6 @@ void FeatureFactory::onUpdateRotation(LocalPlayer* localPlayer) {
 		}
 	}
 }
-//Vector2<float> mousePos, char mouseButton, char isDown
 
 void FeatureFactory::onMouseUpdate(Vector2<float> mousePos, char mouseButton, char isDown) {
 	if (!Lift::isInitialized())

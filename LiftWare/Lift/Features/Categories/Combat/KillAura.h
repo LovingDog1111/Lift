@@ -11,4 +11,5 @@ private:
     int rotations = 0;
     float reach = 6.f;
     Vector2<float> angles = { 0,0 };
+    bool exploit = true;
 };

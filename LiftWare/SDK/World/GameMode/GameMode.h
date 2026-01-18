@@ -3,10 +3,10 @@
 #include "../../Math/IncludeAll.h"
 #include <functional>
 #include "../../Values/Sigs.h"
+#include "../../Network/Packets/PlayerAuthInputPacket.h"
 
 class Actor;
 class Player;
-class InputMode;
 class ItemStack;
 class Block;
 

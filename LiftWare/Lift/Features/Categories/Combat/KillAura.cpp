@@ -1,19 +1,17 @@
 #include "KillAura.h"
 
-KillAura::KillAura() : Feature("Killaura", "Automatically attacks nearby players.", Category::COMBAT) {
+KillAura::KillAura() : Feature("KillAura", "Automatically attacks nearby players.", Category::COMBAT) {
     std::vector<std::string> rots = { "Fast", "Slow" };
     registerSetting(new EnumSetting("Rotations", "Select your rotation mode", rots, &rotations, 0));
     registerSetting(new SliderSetting<float>("Reach", "How far to reach.", &reach, reach, 0.f, 20.f));
+    registerSetting(new BoolSetting("Exploit", "Exploit attack speed", &exploit, true));
 }
 
 std::vector<Actor*> KillAura::getTargets(Actor* localPlayer, float range) {
     std::vector<Actor*> targets;
     if (!Game::getClientInstance() || !Game::getLocalPlayer()) return targets;
     for (Actor* actor : localPlayer->level->getRuntimeActorList()) {
-        if (!actor) continue;
-        if (!actor->getAABBShapeComponent()) continue;
-        if (!actor->getStateVectorComponent()) continue;
-        if (actor == localPlayer) continue;
+        if (!Targets::FilterInvalid(actor, false)) continue;
 
         Vector3<float> diff = actor->getPosition() - localPlayer->getPosition();
         float dist = std::sqrt(diff.x * diff.x + diff.y * diff.y + diff.z * diff.z);
@@ -35,14 +33,21 @@ void KillAura::onUpdateRotation(LocalPlayer* localPlayer) {
         float distB = std::sqrt(db.x * db.x + db.y * db.y + db.z * db.z);
         return distA < distB;
         });
+
     if (rotations == 0) {
         angles = localPlayer->getPosition().CalcAngle(closest->getPosition());
+        if (exploit) {
+            for (int i = 0; i < 19; i++) {
+                localPlayer->gameMode->attack(closest);
+                localPlayer->swing();
+            }
+        }
     }
 
     auto* rot = localPlayer->getActorRotationComponent();
     if (rot) {
-        rot->presentRot.y = angles.y;
-        rot->presentRot.x = angles.x;
+        rot->mYaw = angles.y;
+        rot->mPitch = angles.x;
     }
     auto* headrot = localPlayer->getActorHeadRotationComponent();
     if (headrot) {

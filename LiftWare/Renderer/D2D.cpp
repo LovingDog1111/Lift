@@ -15,7 +15,9 @@ static ID2D1Device2* d2dDevice = nullptr;
 static ID2D1DeviceContext2* d2dDeviceContext = nullptr;
 static ID2D1Bitmap1* sourceBitmap = nullptr;
 static ID2D1Effect* blurEffect = nullptr;
-
+static ID2D1Bitmap1* shadowBitmap = nullptr;
+static ID2D1Effect* shadowEffect = nullptr;
+static ID2D1Effect* stencilEffect = nullptr;
 
 static std::unordered_map<float, winrt::com_ptr<IDWriteTextFormat>> textFormatCache;
 static std::unordered_map<uint64_t, winrt::com_ptr<IDWriteTextLayout>> textLayoutCache;
@@ -46,10 +48,10 @@ ID2D1SolidColorBrush* getSolidColorBrush(const Color& color);
 
 void D2D::NewFrame(IDXGISwapChain3* swapChain, ID3D11Device* d3d11Device, float fxdpi) {
 	if (!initD2D) {
-
 		D2D1CreateFactory(D2D1_FACTORY_TYPE_MULTI_THREADED, &d2dFactory);
 
-		DWriteCreateFactory(DWRITE_FACTORY_TYPE_SHARED, __uuidof(d2dWriteFactory), reinterpret_cast<IUnknown**>(&d2dWriteFactory));
+		DWriteCreateFactory(DWRITE_FACTORY_TYPE_SHARED, __uuidof(d2dWriteFactory),
+			reinterpret_cast<IUnknown**>(&d2dWriteFactory));
 
 		IDXGIDevice* dxgiDevice;
 		d3d11Device->QueryInterface<IDXGIDevice>(&dxgiDevice);
@@ -57,19 +59,27 @@ void D2D::NewFrame(IDXGISwapChain3* swapChain, ID3D11Device* d3d11Device, float 
 		dxgiDevice->Release();
 
 		d2dDevice->CreateDeviceContext(D2D1_DEVICE_CONTEXT_OPTIONS_NONE, &d2dDeviceContext);
-
+		// d2dDevice->CreateDeviceContext(D2D1_DEVICE_CONTEXT_OPTIONS_ENABLE_MULTITHREADED_OPTIMIZATIONS,
+		// &d2dDeviceContext);
 
 		d2dDeviceContext->CreateEffect(CLSID_D2D1GaussianBlur, &blurEffect);
 		blurEffect->SetValue(D2D1_GAUSSIANBLUR_PROP_BORDER_MODE, D2D1_BORDER_MODE_HARD);
-		blurEffect->SetValue(D2D1_GAUSSIANBLUR_PROP_OPTIMIZATION, D2D1_GAUSSIANBLUR_OPTIMIZATION_QUALITY);
+		blurEffect->SetValue(D2D1_GAUSSIANBLUR_PROP_OPTIMIZATION,
+			D2D1_GAUSSIANBLUR_OPTIMIZATION_QUALITY);
+
+		d2dDeviceContext->CreateEffect(CLSID_D2D1Shadow, &shadowEffect);
+
+		d2dDeviceContext->CreateEffect(CLSID_D2D1AlphaMask, &stencilEffect);
 
 		IDXGISurface* dxgiBackBuffer = nullptr;
 		swapChain->GetBuffer(0, IID_PPV_ARGS(&dxgiBackBuffer));
-		D2D1_BITMAP_PROPERTIES1 bitmapProperties
-			= D2D1::BitmapProperties1(D2D1_BITMAP_OPTIONS_TARGET | D2D1_BITMAP_OPTIONS_CANNOT_DRAW,
-				D2D1::PixelFormat(DXGI_FORMAT_UNKNOWN, D2D1_ALPHA_MODE_PREMULTIPLIED), fxdpi, fxdpi);
-		d2dDeviceContext->CreateBitmapFromDxgiSurface(dxgiBackBuffer, &bitmapProperties, &sourceBitmap);
+		D2D1_BITMAP_PROPERTIES1 bitmapProperties = D2D1::BitmapProperties1(
+			D2D1_BITMAP_OPTIONS_TARGET | D2D1_BITMAP_OPTIONS_CANNOT_DRAW,
+			D2D1::PixelFormat(DXGI_FORMAT_UNKNOWN, D2D1_ALPHA_MODE_PREMULTIPLIED), fxdpi, fxdpi);
+		d2dDeviceContext->CreateBitmapFromDxgiSurface(dxgiBackBuffer, &bitmapProperties,
+			&sourceBitmap);
 		dxgiBackBuffer->Release();
+
 		d2dDeviceContext->SetTarget(sourceBitmap);
 
 		initD2D = true;
@@ -119,6 +129,9 @@ void D2D::Clean() {
 	if (!initD2D)
 		return;
 
+	SafeRelease(shadowBitmap);   // 新增的阴影位图
+	SafeRelease(stencilEffect);  // 新增的模板效果
+	SafeRelease(shadowEffect);   // 新增的阴影效果
 	SafeRelease(d2dFactory);
 	SafeRelease(d2dWriteFactory);
 	SafeRelease(d2dDevice);
@@ -198,9 +211,9 @@ void D2D::drawRectangle(const Vector4<float>& rect, const Color& color, float wi
 
 	float x1 = rect.x, y1 = rect.y, x2 = rect.z, y2 = rect.w;
 
-	bool topLeft = roundType == CornerRoundType::TopOnly || roundType == CornerRoundType::SidesOnly || roundType == CornerRoundType::Left;
+	bool topLeft = roundType == CornerRoundType::TopOnly || roundType == CornerRoundType::SidesOnly || roundType == CornerRoundType::Left || roundType == CornerRoundType::TopLeftOnly;
 	bool topRight = roundType == CornerRoundType::TopOnly || roundType == CornerRoundType::SidesOnly || roundType == CornerRoundType::Right;
-	bool bottomLeft = roundType == CornerRoundType::BottomOnly || roundType == CornerRoundType::SidesOnly || roundType == CornerRoundType::Left;
+	bool bottomLeft = roundType == CornerRoundType::BottomOnly || roundType == CornerRoundType::SidesOnly || roundType == CornerRoundType::Left || roundType == CornerRoundType::BottomLeftOnly;
 	bool bottomRight = roundType == CornerRoundType::BottomOnly || roundType == CornerRoundType::SidesOnly || roundType == CornerRoundType::Right;
 
 	sink->BeginFigure(D2D1::Point2F(x1 + (topLeft ? rounding : 0), y1), D2D1_FIGURE_BEGIN_HOLLOW);
@@ -258,9 +271,9 @@ void D2D::fillRectangle(const Vector4<float>& rect, const Color& color, float ro
 
 	float x1 = rect.x, y1 = rect.y, x2 = rect.z, y2 = rect.w;
 
-	bool topLeft = roundType == CornerRoundType::TopOnly || roundType == CornerRoundType::SidesOnly || roundType == CornerRoundType::Left;
+	bool topLeft = roundType == CornerRoundType::TopOnly || roundType == CornerRoundType::SidesOnly || roundType == CornerRoundType::Left || roundType == CornerRoundType::TopLeftOnly;
 	bool topRight = roundType == CornerRoundType::TopOnly || roundType == CornerRoundType::SidesOnly || roundType == CornerRoundType::Right;
-	bool bottomLeft = roundType == CornerRoundType::BottomOnly || roundType == CornerRoundType::SidesOnly || roundType == CornerRoundType::Left;
+	bool bottomLeft = roundType == CornerRoundType::BottomOnly || roundType == CornerRoundType::SidesOnly || roundType == CornerRoundType::Left || roundType == CornerRoundType::BottomLeftOnly;
 	bool bottomRight = roundType == CornerRoundType::BottomOnly || roundType == CornerRoundType::SidesOnly || roundType == CornerRoundType::Right;
 
 	sink->BeginFigure(D2D1::Point2F(x1 + (topLeft ? rounding : 0), y1), D2D1_FIGURE_BEGIN_FILLED);
@@ -347,9 +360,9 @@ void D2D::fillGradientRectangle(const Vector4<float>& rect, const Color& startCo
 
 	float x1 = rect.x, y1 = rect.y, x2 = rect.z, y2 = rect.w;
 
-	bool topLeft = roundType == CornerRoundType::TopOnly || roundType == CornerRoundType::SidesOnly || roundType == CornerRoundType::Left;
+	bool topLeft = roundType == CornerRoundType::TopOnly || roundType == CornerRoundType::SidesOnly || roundType == CornerRoundType::Left || roundType == CornerRoundType::TopLeftOnly;
 	bool topRight = roundType == CornerRoundType::TopOnly || roundType == CornerRoundType::SidesOnly || roundType == CornerRoundType::Right;
-	bool bottomLeft = roundType == CornerRoundType::BottomOnly || roundType == CornerRoundType::SidesOnly || roundType == CornerRoundType::Left;
+	bool bottomLeft = roundType == CornerRoundType::BottomOnly || roundType == CornerRoundType::SidesOnly || roundType == CornerRoundType::Left || roundType == CornerRoundType::BottomLeftOnly;
 	bool bottomRight = roundType == CornerRoundType::BottomOnly || roundType == CornerRoundType::SidesOnly || roundType == CornerRoundType::Right;
 
 	sink->BeginFigure(D2D1::Point2F(x1 + (topLeft ? rounding : 0), y1), D2D1_FIGURE_BEGIN_FILLED);
@@ -406,9 +419,9 @@ void D2D::fillGradientRectangleVertical(const Vector4<float>& rect, const Color&
 		geometry->Open(&sink);
 
 		float x1 = rect.x, y1 = rect.y, x2 = rect.z, y2 = rect.w;
-		bool topLeft = roundType == CornerRoundType::TopOnly || roundType == CornerRoundType::SidesOnly || roundType == CornerRoundType::Left;
+		bool topLeft = roundType == CornerRoundType::TopOnly || roundType == CornerRoundType::SidesOnly || roundType == CornerRoundType::Left || roundType == CornerRoundType::TopLeftOnly;
 		bool topRight = roundType == CornerRoundType::TopOnly || roundType == CornerRoundType::SidesOnly || roundType == CornerRoundType::Right;
-		bool bottomLeft = roundType == CornerRoundType::BottomOnly || roundType == CornerRoundType::SidesOnly || roundType == CornerRoundType::Left;
+		bool bottomLeft = roundType == CornerRoundType::BottomOnly || roundType == CornerRoundType::SidesOnly || roundType == CornerRoundType::Left || roundType == CornerRoundType::BottomLeftOnly;
 		bool bottomRight = roundType == CornerRoundType::BottomOnly || roundType == CornerRoundType::SidesOnly || roundType == CornerRoundType::Right;
 
 		sink->BeginFigure(D2D1::Point2F(x1 + (topLeft ? rounding : 0), y1), D2D1_FIGURE_BEGIN_FILLED);
@@ -1100,4 +1113,136 @@ void D2D::drawStarParticles(const Vector2<float>& screenSize, const Color& color
 		d2dDeviceContext->DrawLine(points[6], points[7], starBrush, 1.0f);
 		d2dDeviceContext->DrawLine(points[7], points[0], starBrush, 1.0f);
 	}
+}
+
+#define D2D_CTX_GUARD()   \
+    if(!d2dDeviceContext) \
+        return;
+#define D2D_CTX_GUARD_RET(defaultVal) \
+    if(!d2dDeviceContext)             \
+        return defaultVal;
+
+void D2D::addShadow(const Vector4<float>& rect, float strength, const Color& shadowColor,
+	float rounding, const std::vector<Vector4<float>>& excludeRects) {
+	D2D_CTX_GUARD();
+
+	if (!d2dDeviceContext)
+		return;
+
+	Vector2<float> windowSize = getWindowSize();
+
+	// 创建阴影位图（如果还没有）
+	if (shadowBitmap == nullptr) {
+		D2D1_BITMAP_PROPERTIES1 newLayerProps =
+			D2D1::BitmapProperties1(D2D1_BITMAP_OPTIONS_TARGET, sourceBitmap->GetPixelFormat());
+		d2dDeviceContext->CreateBitmap(sourceBitmap->GetPixelSize(), nullptr, 0, newLayerProps,
+			&shadowBitmap);
+	}
+
+	// 在阴影位图上绘制形状
+	d2dDeviceContext->SetTarget(shadowBitmap);
+	d2dDeviceContext->Clear(D2D1::ColorF(0, 0, 0, 0));
+
+	// 创建颜色画刷
+	ID2D1SolidColorBrush* colorBrush =
+		getSolidColorBrush(Color(shadowColor.r, shadowColor.g, shadowColor.b, 255));
+
+	// 绘制圆角矩形
+	D2D1_ROUNDED_RECT roundedRect =
+		D2D1::RoundedRect(D2D1::RectF(rect.x, rect.y, rect.z, rect.w), rounding, rounding);
+	d2dDeviceContext->FillRoundedRectangle(roundedRect, colorBrush);
+
+	// 应用高斯模糊
+	blurEffect->SetInput(0, shadowBitmap);
+	blurEffect->SetValue(D2D1_GAUSSIANBLUR_PROP_STANDARD_DEVIATION, strength);
+	blurEffect->SetValue(D2D1_GAUSSIANBLUR_PROP_BORDER_MODE, D2D1_BORDER_MODE_HARD);
+	blurEffect->SetValue(D2D1_GAUSSIANBLUR_PROP_OPTIMIZATION,
+		D2D1_GAUSSIANBLUR_OPTIMIZATION_QUALITY);
+
+	// 如果有排除区域，创建遮罩
+	ID2D1Bitmap1* holeMaskBitmap = nullptr;
+	if (!excludeRects.empty()) {
+		D2D1_BITMAP_PROPERTIES1 maskProps =
+			D2D1::BitmapProperties1(D2D1_BITMAP_OPTIONS_TARGET, sourceBitmap->GetPixelFormat());
+		d2dDeviceContext->CreateBitmap(sourceBitmap->GetPixelSize(), nullptr, 0, maskProps,
+			&holeMaskBitmap);
+
+		d2dDeviceContext->SetTarget(holeMaskBitmap);
+		d2dDeviceContext->Clear(D2D1::ColorF(1, 1, 1, 1));  // 白色背景
+
+		// 创建透明画刷来"挖洞"
+		ID2D1SolidColorBrush* transparentBrush = nullptr;
+		d2dDeviceContext->CreateSolidColorBrush(D2D1::ColorF(0.0f, 0.0f, 0.0f, 0.0f),
+			&transparentBrush);
+
+		// 保存原始混合模式
+		D2D1_PRIMITIVE_BLEND originalBlend = d2dDeviceContext->GetPrimitiveBlend();
+		d2dDeviceContext->SetPrimitiveBlend(D2D1_PRIMITIVE_BLEND_COPY);
+
+		// 在排除区域绘制透明矩形
+		for (const auto& excludeRect : excludeRects) {
+			D2D1_RECT_F rectF =
+				D2D1::RectF(excludeRect.x, excludeRect.y, excludeRect.z, excludeRect.w);
+			ID2D1RectangleGeometry* rectGeo = nullptr;
+			d2dFactory->CreateRectangleGeometry(rectF, &rectGeo);
+			d2dDeviceContext->FillGeometry(rectGeo, transparentBrush);
+			rectGeo->Release();
+		}
+
+		// 恢复混合模式
+		d2dDeviceContext->SetPrimitiveBlend(originalBlend);
+		transparentBrush->Release();
+	}
+
+	// 切换回源位图
+	d2dDeviceContext->SetTarget(sourceBitmap);
+
+	// 获取模糊输出
+	ID2D1Image* blurOutput = nullptr;
+	blurEffect->GetOutput(&blurOutput);
+
+	ID2D1Image* finalOutput = blurOutput;
+
+	// 如果有遮罩，应用 Alpha 遮罩效果
+	if (holeMaskBitmap) {
+		stencilEffect->SetInput(0, blurOutput);
+		stencilEffect->SetInput(1, holeMaskBitmap);
+		stencilEffect->GetOutput(&finalOutput);
+	}
+
+	// 创建图像画刷
+	ID2D1ImageBrush* imageBrush = nullptr;
+	D2D1_IMAGE_BRUSH_PROPERTIES brushProps =
+		D2D1::ImageBrushProperties(D2D1::RectF(0, 0, windowSize.x, windowSize.y));
+	d2dDeviceContext->CreateImageBrush(finalOutput, brushProps, &imageBrush);
+
+	// 设置画刷透明度
+	imageBrush->SetOpacity(shadowColor.a / 255.0f);
+
+	// 绘制到整个屏幕
+	ID2D1RectangleGeometry* screenGeo = nullptr;
+	d2dFactory->CreateRectangleGeometry(D2D1::RectF(0, 0, windowSize.x, windowSize.y), &screenGeo);
+	d2dDeviceContext->FillGeometry(screenGeo, imageBrush);
+
+	// 清理资源
+	screenGeo->Release();
+	imageBrush->Release();
+	blurOutput->Release();
+
+	if (holeMaskBitmap) {
+		if (finalOutput != blurOutput) {
+			finalOutput->Release();
+		}
+		holeMaskBitmap->Release();
+	}
+}
+
+void D2D::addDropShadow(const Vector4<float>& rect, float blurRadius,
+	const Color& shadowColor, const Vector2<float>& offset,
+	float rounding) {
+	D2D_CTX_GUARD();
+	Vector4<float> shadowRect =
+		Vector4<float>(rect.x + offset.x, rect.y + offset.y, rect.z + offset.x, rect.w + offset.y);
+	std::vector<Vector4<float>> excludeRects = { rect };
+	addShadow(shadowRect, blurRadius, shadowColor, rounding, excludeRects);
 }

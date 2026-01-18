@@ -3,6 +3,10 @@
 #include "Core/ClientInstance.h"
 #include "MCTextFormat.h"
 #include "World/Actors/LocalPlayer.h"
+#include "Network/MinecraftPacket.h"
+#include "Network/PacketSender.h"
+#include "Network/Packets/PlayerAuthInputPacket.h"
+#include "Network/Packets/MovePlayerPacket.h"
 
 namespace Game {
 	extern ClientInstance* clientInstance;

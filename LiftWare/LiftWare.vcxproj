@@ -107,7 +107,9 @@
       </ForcedIncludeFiles>
     </ClCompile>
     <ClCompile Include="Libs\kiero\kiero.cpp" />
+    <ClCompile Include="Lift\Features\Categories\Combat\AntiHit.cpp" />
     <ClCompile Include="Lift\Features\Categories\Movement\Speed.cpp" />
+    <ClCompile Include="Lift\Features\Categories\Exploit\Disabler.cpp" />
     <ClCompile Include="Lift\Features\Categories\Visual\CustomSky.cpp" />
     <ClCompile Include="Lift\Features\Categories\Visual\NoCrosshair.cpp" />
     <ClCompile Include="Lift\Features\Categories\Visual\NoEatBob.cpp" />
@@ -121,7 +123,6 @@
     <ClCompile Include="Lift\Commands\Commands\SetPositionCommand.cpp" />
     <ClCompile Include="Lift\Features\Categories\Combat\KillAura.cpp" />
     <ClCompile Include="Lift\Features\Categories\Movement\Fly.cpp" />
-    <ClCompile Include="Lift\Features\Categories\Other\Test.cpp" />
     <ClCompile Include="Lift\Features\Categories\Visual\ArrayList.cpp" />
     <ClCompile Include="Lift\Features\Categories\Visual\ClickGUI.cpp" />
     <ClCompile Include="Lift\Features\FeatureBase\FeatureBase.cpp" />
@@ -159,6 +160,7 @@
     <ClInclude Include="HookFactory\Hooks\PresentHook.h" />
     <ClInclude Include="HookFactory\Hooks\ResizeBuffersHook.h" />
     <ClInclude Include="HookFactory\Hooks\SendChatMessageHook.h" />
+    <ClInclude Include="HookFactory\Hooks\SendPacketHook.h" />
     <ClInclude Include="Libs\curl\curl.h" />
     <ClInclude Include="Libs\curl\curlver.h" />
     <ClInclude Include="Libs\curl\easy.h" />
@@ -554,7 +556,9 @@
     <ClInclude Include="Libs\libhat\libhat\Traits.hpp" />
     <ClInclude Include="Libs\minhook\MinHook.h" />
     <ClInclude Include="Libs\xorstr.hpp" />
+    <ClInclude Include="Lift\Features\Categories\Combat\AntiHit.h" />
     <ClInclude Include="Lift\Features\Categories\Movement\Speed.h" />
+    <ClInclude Include="Lift\Features\Categories\Exploit\Disabler.h" />
     <ClInclude Include="Lift\Features\Categories\Visual\CustomSky.h" />
     <ClInclude Include="Lift\Features\Categories\Visual\NoCrosshair.h" />
     <ClInclude Include="Lift\Features\Categories\Visual\NoEatBob.h" />
@@ -570,7 +574,6 @@
     <ClInclude Include="Lift\Commands\Commands\SetPositionCommand.h" />
     <ClInclude Include="Lift\Features\Categories\Combat\KillAura.h" />
     <ClInclude Include="Lift\Features\Categories\Movement\Fly.h" />
-    <ClInclude Include="Lift\Features\Categories\Other\Test.h" />
     <ClInclude Include="Lift\Features\Categories\Visual\ArrayList.h" />
     <ClInclude Include="Lift\Features\Categories\Visual\ClickGUI.h" />
     <ClInclude Include="Lift\Features\FeatureBase\FeatureBase.h" />

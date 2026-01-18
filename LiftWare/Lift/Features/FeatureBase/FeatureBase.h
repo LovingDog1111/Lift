@@ -9,7 +9,7 @@
 #include "Settings/Keybind.h"
 #include "Settings/Slider.h"
 #include "Settings/Enum.h"
-
+#include "../../Utils/Targets.h"
 #include "../../Renderer/D2D.h"
 
 enum class Category {
@@ -69,6 +69,7 @@ public:
 	virtual bool isHoldMode();
 	virtual int getKeybind();
 	virtual void setKeybind(int key);
+	virtual void onSendPacket(Packet* packet);
 	virtual bool runOnBackground();
 	virtual void setEnabled(bool enable);
 	virtual void toggle();

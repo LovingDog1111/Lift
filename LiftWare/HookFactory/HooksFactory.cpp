@@ -14,6 +14,7 @@
 #include "../Lift/Features/FeatureFactory.h"
 #include "Hooks/BrightnessFogColorHook.h"
 #include "../Values/Sigs.h"
+#include "Hooks/SendPacketHook.h"
 
 void HooksFactory::init() {
 	MH_Initialize();
@@ -36,6 +37,11 @@ void HooksFactory::init() {
 		uintptr_t** OptionsVtable = (uintptr_t**)(uintptr_t)Memory::GetVTableFromSignature(
 			Sigs::OptionsVTable);
 		AddHook<GammaHook>(OptionsVtable, VTables::GammaHook);
+	}
+
+	{
+		uintptr_t** PacketSenderVTable = (uintptr_t**)(uintptr_t)Memory::GetVTableFromSignature("48 8D 05 ?? ?? ?? ?? 49 89 07 4D 89 6F ?? 41 C6 47");
+		AddHook<SendPacketHook>(PacketSenderVTable, 2);
 	}
 
 	if (kiero::init(kiero::RenderType::D3D12) == kiero::Status::Success) { //Im pretty sure this never changes, so im not going to add it to the vtable class.

@@ -93,6 +93,10 @@ void Feature::onEnable() {
 void Feature::onNormalTick(LocalPlayer* localPlayer) {
 }
 
+void Feature::onSendPacket(Packet* packet) {
+
+}
+
 void Feature::onD2DRender() {
 }
 

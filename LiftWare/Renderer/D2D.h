@@ -21,7 +21,9 @@ namespace D2D {
 		Full,
 		SidesOnly,
 		Left,
-		Right
+		Right,
+		TopLeftOnly,
+		BottomLeftOnly
 	};
 
 	void NewFrame(IDXGISwapChain3* swapChain, ID3D11Device* d3d11Device, float fxdpi);
@@ -58,4 +60,9 @@ namespace D2D {
 		float maxDistance
 	);
 	void drawStarParticles(const Vector2<float>& screenSize, const Color& color, int particleCount, float speed, float size);
+	void addShadow(const Vector4<float>& rect, float strength, const Color& shadowColor,
+		float rounding, const std::vector<Vector4<float>>& excludeRects);
+	void addDropShadow(const Vector4<float>& rect, float blurRadius,
+		const Color& shadowColor, const Vector2<float>& offset,
+		float rounding);
 };
