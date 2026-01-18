@@ -6,6 +6,8 @@
 
 class Packet {
 public:
+    virtual ~Packet() = default; 
+
     BUILD_ACCESS(PacketHandlerDispatcherInstance*, packetHandler, 0x20);
 private:
     char pad_0x0[0x30];

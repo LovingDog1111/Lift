@@ -14,6 +14,7 @@
 #include "../../Values/Vtables.h"
 #include "../Render/LevelRendererPlayer.h"
 #include "../World/Level/Level.h"
+#include "../Network/PacketSender.h"
 
 struct GLMatrix {
 public:
@@ -82,6 +83,7 @@ public:
 	BUILD_ACCESS(MinecraftGame*, mcGame, Offsets::mcGame);
 	BUILD_ACCESS(Minecraft*, minecraft, Offsets::minecraft);
 	BUILD_ACCESS(GuiData*, guiData, Offsets::guiData);
+	BUILD_ACCESS(PacketSender*, packetSender, 0xF8);
 public:
 	ClientHMDState* getHMDState() {
 		return Memory::callVirtualFuncSolstice<ClientHMDState*>(407, this, "GetHMDState");

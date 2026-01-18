@@ -37,7 +37,7 @@ void KillAura::onUpdateRotation(LocalPlayer* localPlayer) {
     if (rotations == 0) {
         angles = localPlayer->getPosition().CalcAngle(closest->getPosition());
         if (exploit) {
-            for (int i = 0; i < 19; i++) {
+            for (int i = 0; i < 6.7; i++) {
                 localPlayer->gameMode->attack(closest);
                 localPlayer->swing();
             }
@@ -62,10 +62,17 @@ void KillAura::onNormalTick(LocalPlayer* localPlayer) {
     if (targets.empty()) return;
     for (Actor* target : targets) {
         if (target) {
+            Actor* closest = *std::min_element(targets.begin(), targets.end(), [&](Actor* a, Actor* b) {
+                Vector3<float> da = a->getPosition() - localPlayer->getPosition();
+                Vector3<float> db = b->getPosition() - localPlayer->getPosition();
+                float distA = std::sqrt(da.x * da.x + da.y * da.y + da.z * da.z);
+                float distB = std::sqrt(db.x * db.x + db.y * db.y + db.z * db.z);
+                return distA < distB;
+                });
             localPlayer->swing();
             localPlayer->gameMode->attack(target);
             if (rotations == 1) {
-                angles = localPlayer->getPosition().CalcAngle(target->getPosition());
+                angles = localPlayer->getPosition().CalcAngle(closest->getPosition());
             }
         }
     }
